@@ -1,0 +1,9 @@
+Explicaciones de las funciones utilizadas en el servidor
+
+socklen_t => tamaño de la direccion
+
+"nosocket = socket(AF_INET, SOCK_STREAM, 0);"
+int socket (int namespace, int style, int protocol) =>
+  - AF_INET (indicar si los clientes pueden estar en otros ordenadores distintos del servidor)
+  - SOCK_STREAM (Orientado a conexion) - SOCK_DGRAM (NO orientado a conexion)
+  - El cero es usualmente usado para el protocolo
