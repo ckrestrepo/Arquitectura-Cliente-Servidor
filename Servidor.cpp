@@ -1,3 +1,5 @@
+/* ..... SERVIDOR ....*/
+
 #include "iostream"
 #include "stdlib.h"
 #include "string.h"
@@ -53,14 +55,41 @@ int main ()
     cout <<"nosotros: " <<nosocket <<endl;
     while(1)
     {
-        /*
         señal_tam = sizeof(struct sockaddr_in);
         nuevo_socket = accept(nosocket, (struct sockaddr*)&cliente, &señal_tam);
         if (nuevo_socket == -1)
         {
-            cout <<"error en accept()" <<endl;
+            cout <<"error en accept()" << endl;
             exit(-1);
         }
-        */
-    }
+        cout<<"nuevo_socket: " <<nuevo_socket<<endl; // El numero que le asigno al cliente (apuntador)
+        char *dire;
+        dire = inet_ntoa(cliente.sin_addr);
+        //cout<<"Se ubtuvo conexion desde: " <<inet_ntoa(cliete.sin_addr);
+        //printf("%s", inet_ntoa(cliente.sin_addr));
+        // Estas dos lineas comentadas dan la misma informacion de la siguiente
+        cout <<"Direccion del cliente: " <<dire <<endl;
+        send(nuevo_socket, "Bienvenido al servidor.\n", 22, 0);
+        
+        // Procesamiento del mensaje recibido
+     	
+     	cout <<"En espera de mensaje..." <<endl;
+     	char msj[MAXLONGITUD];
+     	int numbytes = recv (nuevo_socket, msj, MAXLONGITUD, 0);
+     	if (numbytes == -1)
+     	{
+     		cout <<"Error al recibir. " <<endl;
+     	}
+     	if (numbytes == 0)
+     	{
+     		cout <<"Conexion finalizada" <<endl;
+     	}
+     	if (numbytes > 0)
+     	{
+     		msj[numbytes] = '\0'; //con el backslash cero indica que hasta ahi llega el mensaje
+     		cout <<"Mensaje del cliente: " <<msj <<endl;
+     	}
+     	close(nuevo_socket);
+    } // fin del while (1)
+    return 0;
 }
