@@ -21,7 +21,7 @@ int main()
 {
 	int nosocket, numbytes;
 	char msj[MAXLONGITUD];
-	char const host_servidor[]="127.0.0.1";
+	char const host_servidor[]="192.168.8.157";
 	struct hostent *host_entrante;
 	struct sockaddr_in servidor;
 	
@@ -33,7 +33,7 @@ int main()
 		exit(-1);
 	}
 	
-	nosocket = socket(AF_INET, SOCK_STREAM, 0)
+	nosocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (nosocket == -1)
 	{
 		cout <<"Error en conexion 1" <<endl;
@@ -57,8 +57,8 @@ int main()
 		cout <<"Error al recibir" <<endl;
 		exit(-1);
 	}
-	send(servidor, "Saludos\n", 22, 0);
-	msh[numbytes] = '\0';
+	//send(nosocket, "Saludos\n", 22, 0);
+	msj[numbytes] = '\0';
 	cout <<"Mensaje: "<<msj <<endl;
 	
 	//Nuevo mensaje al servidor
