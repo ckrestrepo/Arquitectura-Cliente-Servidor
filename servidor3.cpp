@@ -18,7 +18,6 @@ using namespace std;
 #define MAXLONGITUD 128
 
 int inicializar();
-int comprobar_socket(int);
 void verIP(struct sockaddr_in, int);
 int nueva_cx(int);
 string recibir(int);
@@ -35,7 +34,11 @@ socklen_t senal_tam;
 int inicializar ()
 {
     nosocket = socket(AF_INET, SOCK_STREAM, 0);
-    comprobar_socket(nosocket);
+    if (nosocket == -1)
+    {
+        cout <<"Error de Socket..."<<endl;
+        exit(-1);
+    }
     dirservidor.sin_family = AF_INET;
     dirservidor.sin_port = htons(MIPUERTO);
     dirservidor.sin_addr.s_addr = inet_addr("127.0.0.1");
@@ -52,21 +55,11 @@ int inicializar ()
     }
 }
 
-// Funcion que comprueba si el socket esta habilitado
-int comprobar_socket(int numsocket)
-{
-    if (numsocket == -1)
-    {
-        cout <<"Error de Socket..."<<endl;
-        exit(-1);
-    }
-}
-
 // Funcion que hace una nueva conexion
-int nueva_cx (int ns)
+int nueva_cx (int sock)
 {
     senal_tam = sizeof(struct sockaddr_in);
-    nuevo_socket = accept(ns, (struct sockaddr*)&cliente, &senal_tam);
+    int ns = accept(sock, (struct sockaddr*)&cliente, &senal_tam);
     if (nuevo_socket == -1)
     {
         cout <<"error en accept()" << endl;
@@ -81,7 +74,7 @@ void verIP (struct sockaddr_in c, int sock)
     char*  dire;
     dire = inet_ntoa(c.sin_addr);
     cout <<"Direccion del cliente: " <<dire <<endl;
-    enviar(sock, "...Bienvenido al servidor...\n\n");
+    enviar(sock, "\n...Bienvenido al servidor...\n");
 }
 
 // Funcion que envia mensajes al cliente (tiene sobrecarga)
@@ -125,28 +118,13 @@ string recibir (int sock)
 int main ()
 {
     inicializar();
+    cout <<"\n...Bienvenido al servidor...\n";
     while(1)
     {
-    	cout <<"\n!!!... SERVIDOR 2.0 ....!!!\n\n";
         nuevo_socket = nueva_cx(nosocket);
         verIP(cliente, nuevo_socket);
-        //enviar(nuevo_socket, "bien o no");
-        //cout <<"En espera del primer numero... \n";
         cout <<"Cliente dice: " << recibir(nuevo_socket) <<endl;
         enviar(nuevo_socket);
-        //cout <<"Cliente dice: " << recibir(nuevo_socket) <<endl;
-        /*
-        // Aca seria la operacion
-        int res = (atoi(msj) + atoi(msj2));
-        stringstream stream; 
-        stream << res; 
-        string palabra = stream.str();
-        string total = "El resultado es: " + palabra;
-        cout << total;
-        strcpy(msj, total.c_str()); // c_str() convierte a char
-        //Envio el resultado
-        send(nuevo_socket, msj, total.size(), 0);
-        */
         close(nuevo_socket);
     } // fin del while (1)
     return 0;
