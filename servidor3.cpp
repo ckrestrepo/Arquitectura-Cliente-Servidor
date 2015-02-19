@@ -23,12 +23,49 @@ int nueva_cx(int);
 string recibir(int);
 void enviar(int);
 void enviar(int, string);
+int stringtoint(string);
+string inttostring(int);
 
 
 int nosocket, nuevo_socket;
 struct sockaddr_in dirservidor;
 struct sockaddr_in cliente;
 socklen_t senal_tam;
+
+
+int main ()
+{
+    inicializar();
+    cout <<"\n...Bienvenido al servidor...\n";
+    while(1)
+    {
+        nuevo_socket = nueva_cx(nosocket);
+        verIP(cliente, nuevo_socket);
+        int opcion;
+        do
+        {
+            string valoropc = recibir(nuevo_socket);
+            cout <<"Cliente dice: " << valoropc <<endl;
+            //Cambiamos la cadena a entero
+            opcion = stringtoint(valoropc);
+            enviar(nuevo_socket, "Acciona realizada");
+            /*
+            if (opcion == 1)
+            {
+                enviar(nuevo_socket, "numero 1 recibido\n");
+            }*/
+        }while(opcion != 3);
+        close(nuevo_socket);
+    } // fin del while (1)
+    return 0;
+}
+
+// Funcion que suma dos numeros
+int suma (int a, int b)
+{
+    int res = a + b;
+    return res;
+}
 
 // Funcion que inicializa el servidor
 int inicializar ()
@@ -82,7 +119,7 @@ void verIP (struct sockaddr_in c, int sock)
 
 void enviar (int sock)
 {
-    send(sock, "Breve...\n", 10, 0);
+    send(sock, "Breve la vuelta...\n", 19, 0);
 }
 
 void enviar (int sock, string cadena)
@@ -115,17 +152,18 @@ string recibir (int sock)
     return mensaje;
 }
 
-int main ()
+int stringtoint(string x)
 {
-    inicializar();
-    cout <<"\n...Bienvenido al servidor...\n";
-    while(1)
-    {
-        nuevo_socket = nueva_cx(nosocket);
-        verIP(cliente, nuevo_socket);
-        cout <<"Cliente dice: " << recibir(nuevo_socket) <<endl;
-        enviar(nuevo_socket);
-        close(nuevo_socket);
-    } // fin del while (1)
-    return 0;
+    int valor = atoi(x.c_str());
+    return valor;
 }
+
+//Convierte de entero a cadena
+string inttostring(int x)
+{
+    stringstream ss;
+    ss<<x;
+    string cadena = ss.str();
+    return cadena;
+}
+
