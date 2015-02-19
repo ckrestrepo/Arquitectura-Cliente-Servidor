@@ -17,14 +17,23 @@ using namespace std;
 #define MIPUERTO 9091
 #define MAXLONGITUD 128
 
-int main()
+int nosocket, numbytes;
+char msj[MAXLONGITUD];
+char const host_servidor[]="127.0.0.1";
+struct hostent *host_entrante;
+struct sockaddr_in servidor;
+
+// Funciones declaradas
+int iniciar();
+void conectar();
+string recibir(int);
+void enviar(int);
+void enviar(int, string);
+
+
+//Metodos
+int iniciar()
 {
-	int nosocket, numbytes;
-	char msj[MAXLONGITUD];
-	char const host_servidor[]="127.0.0.1";
-	struct hostent *host_entrante;
-	struct sockaddr_in servidor;
-	
 	host_entrante = gethostbyname(host_servidor);
 	if (host_entrante == NULL)
 	{
@@ -44,8 +53,10 @@ int main()
 	servidor.sin_addr = *((struct in_addr *)host_entrante ->h_addr);
 	//he pasa la informacion de *he hacia h_addr
 	bzero(&(servidor.sin_zero), 8);
-	
-	//connect(nosocket, (struct sockaddr *)&servidor, sizeof(servidor)) == -1
+}
+
+void conectar()
+{
 	if (connect(nosocket, (struct sockaddr *)&servidor, sizeof(struct sockaddr)) == -1)
 	{
 		cout <<"Error en conexion 2" <<endl;
@@ -54,59 +65,77 @@ int main()
 	
 	// Recive respuesta del servidor
 	numbytes=recv(nosocket, msj, MAXLONGITUD, 0);
-	
-	// ACA EMPEZARIA LA INICIALIZACION DE LOS DIGITOS
-	
+
 	if (numbytes == -1)
 	{
 		cout <<"Error al recibir" <<endl;
 		exit(-1);
 	}
-	//send(nosocket, "Saludos\n", 22, 0);
-	//msj[numbytes] = '\0';
-	cout <<"Mensaje: "<<msj <<endl;
-	
-	//Nuevo mensaje al servidor
-	
+	enviar(nosocket, "Saludos\n");
+	msj[numbytes] = '\0';
+	cout <<msj <<endl;
+}
+
+void enviar (int sock)
+{
+    send(sock, "Breve...\n", 10, 0);
+}
+
+void enviar (int sock, string cadena)
+{
+    char mensaje[MAXLONGITUD];
+    strcpy(mensaje, cadena.c_str());
+    send(sock, mensaje, cadena.size(), 0);
+}
+
+string recibir (int sock)
+{
+    char msj[MAXLONGITUD];
+    string mensaje = ""; //toca inicializarlo en vacio
+    int numbytes = recv (sock, msj, MAXLONGITUD, 0);
+    if (numbytes == -1)
+    {
+        cout <<"Error al recibir. " <<endl;
+    }
+    if (numbytes == 0)
+    {
+        cout <<"Conexion finalizada" <<endl;
+    }
+    if (numbytes > 0)
+    {
+        msj[numbytes] = '\0'; //con el backslash cero indica que hasta ahi llega el mensaje
+        //cout <<"Numero: " <<msj <<endl;
+        mensaje = (string)msj;
+    }
+    return mensaje;
+}
+
+int main()
+{	
+	iniciar();
+	conectar();
+	cout<<"Mensaje: " <<recibir(nosocket) <<endl;
+	//Ciclo del servicio
+	/*
+	int opcion;
+	do
+	{
+		do
+		{
+			cout <<"\n...Menu de Opciones...\n";
+			cout <<"1. Sumar\n";
+			cout <<"2. Sumar caracteres\n";
+			cout <<"3. Salir...";
+		}while (opcion < 0 || opcion > 3);
+	}while(opcion != 3);
+	*/
+	/*
 	string msjenv;
 	msj[0] ='\0';
-	cout <<"Digite el numero: ";
+	cout <<"Digite cualquier cosa: ";
 	cin >> msjenv;
 	strcpy(msj, msjenv.c_str()); // c_str() convierte a char
 	send(nosocket, msj, msjenv.size(), 0);
-	
-	numbytes=recv(nosocket, msj, MAXLONGITUD, 0);
-	if (numbytes == -1)
-	{
-		cout <<"Error al recibir" <<endl;
-		exit(-1);
-	}
-	cout <<msj <<endl;
-	
-	// Otro mensaje
-	
-	msj[0] ='\0';
-	cout <<"Digite el segundo numero: ";
-	cin >> msjenv;
-	strcpy(msj, msjenv.c_str()); // c_str() convierte a char
-	send(nosocket, msj, msjenv.size(), 0);
-	
-	numbytes=recv(nosocket, msj, MAXLONGITUD, 0);
-	if (numbytes == -1)
-	{
-		cout <<"Error al recibir" <<endl;
-		exit(-1);
-	}
-	cout <<msj <<endl;
-	
-	// Recibo el resultado
-	msj[0] ='\0';
-	numbytes=recv(nosocket, msj, MAXLONGITUD, 0);
-	if (numbytes == -1)
-	{
-		cout <<"Error al recibir" <<endl;
-		exit(-1);
-	}
-	cout <<msj <<endl;
+	*/
 	close(nosocket);
 }
