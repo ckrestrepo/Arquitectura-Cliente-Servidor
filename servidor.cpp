@@ -111,7 +111,7 @@ void verIP (struct sockaddr_in c, int sock)
     char*  dire;
     dire = inet_ntoa(c.sin_addr);
     cout <<"Direccion del cliente: " <<dire <<endl;
-    enviar(sock, "\n...Bienvenido al servidor...\n");
+    enviar(sock, "\n...Bienvenido al servidor...");
 }
 
 // Funcion que envia mensajes al cliente (tiene sobrecarga)

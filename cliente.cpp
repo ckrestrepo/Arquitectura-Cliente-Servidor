@@ -43,7 +43,7 @@ int main()
 	{
 		do
 		{
-			cout <<"...Menu de Opciones...\n";
+			cout <<"\n...Menu de Opciones...\n";
 			cout <<"1. Sumar\n";
 			cout <<"2. Contar caracteres\n";
 			cout <<"3. Salir...\n";
