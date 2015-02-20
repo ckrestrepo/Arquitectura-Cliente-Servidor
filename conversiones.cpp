@@ -13,6 +13,7 @@
 using namespace std;
 
 //Funciones de conversion
+//Sera mi libreria de conversiones
 
 // Convierte de cadena a entero
 int stringtoint(string x)
