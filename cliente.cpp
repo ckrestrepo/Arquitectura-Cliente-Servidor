@@ -29,6 +29,51 @@ int iniciar();
 void conectar();
 string recibir(int);
 void enviar(int, string);
+int stringtoint(string);
+string inttostring(int);
+
+int main()
+{	
+	iniciar();
+	conectar();
+	cout<<"Mensaje: " <<recibir(nosocket) <<endl;
+	//Ciclo del servicio
+	int opcion, a, b;
+	do
+	{
+		do
+		{
+			cout <<"\n...Menu de Opciones...\n";
+			cout <<"1. Sumar\n";
+			cout <<"2. Contar caracteres\n";
+			cout <<"3. Salir...\n";
+			cout <<"Digite una opcion: ";
+			cin >> opcion;
+			/*
+			if (opcion == 1)
+			{
+				cout <<"Digite el primer numero: ";
+				cin >> b;
+				enviar(nosocket, inttostring(b));
+				cout <<recibir(nosocket);
+				cout <<"Digite el segundo numero: ";
+			}*/
+		}while (opcion < 0 || opcion > 3);
+		enviar(nosocket, inttostring(opcion));
+		cout <<recibir(nosocket)<<endl;
+	}while(opcion != 3);
+
+	/*
+	string msjenv;
+	msj[0] ='\0';
+	cout <<"Digite cualquier cosa: ";
+	cin >> msjenv;
+	strcpy(msj, msjenv.c_str()); // c_str() convierte a char
+	send(nosocket, msj, msjenv.size(), 0);
+	*/
+	close(nosocket);
+}
+
 
 
 //Metodos
@@ -108,44 +153,3 @@ string inttostring(int x)
 	return cadena;
 }
 
-int main()
-{	
-	iniciar();
-	conectar();
-	cout<<"Mensaje: " <<recibir(nosocket) <<endl;
-	//Ciclo del servicio
-	int opcion, a, b;
-	do
-	{
-		do
-		{
-			cout <<"\n...Menu de Opciones...\n";
-			cout <<"1. Sumar\n";
-			cout <<"2. Contar caracteres\n";
-			cout <<"3. Salir...\n";
-			cout <<"Digite una opcion: ";
-			cin >> opcion;
-			/*
-			if (opcion == 1)
-			{
-				cout <<"Digite el primer numero: ";
-				cin >> b;
-				enviar(nosocket, inttostring(b));
-				cout <<recibir(nosocket);
-				cout <<"Digite el segundo numero: ";
-			}*/
-		}while (opcion < 0 || opcion > 3);
-		enviar(nosocket, inttostring(opcion));
-		cout <<recibir(nosocket)<<endl;
-	}while(opcion != 3);
-
-	/*
-	string msjenv;
-	msj[0] ='\0';
-	cout <<"Digite cualquier cosa: ";
-	cin >> msjenv;
-	strcpy(msj, msjenv.c_str()); // c_str() convierte a char
-	send(nosocket, msj, msjenv.size(), 0);
-	*/
-	close(nosocket);
-}
