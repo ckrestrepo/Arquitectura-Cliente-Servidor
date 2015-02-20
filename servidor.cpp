@@ -25,6 +25,8 @@ void enviar(int);
 void enviar(int, string);
 int stringtoint(string);
 string inttostring(int);
+void servicio1();
+void servicio2();
 
 
 int nosocket, nuevo_socket;
@@ -49,17 +51,33 @@ int main ()
             //Cambiamos la cadena a entero
             opcion = stringtoint(valoropc);
             enviar(nuevo_socket, "Acciona realizada");
-            /*
-            if (opcion == 1)
+            switch(opcion)
             {
-                enviar(nuevo_socket, "numero 1 recibido\n");
-            }*/
+            	case 1: 
+            		servicio1();
+            		break;
+            	case 2:
+            		servicio2();
+            		break;
+            	default:
+            		cout <<"Opcion incorrecta:..";
+            }
         }while(opcion != 3);
         close(nuevo_socket);
     } // fin del while (1)
     return 0;
 }
 
+void servicio1()
+{
+	cout <<"... Suma de dos digitos...\n";
+	//enviar(nuevo_socket, "En espera del primer numero: ");
+}
+
+void servicio2()
+{
+	cout <<"Ha entrado al programa 2\n";
+}
 // Funcion que suma dos numeros
 int suma (int a, int b)
 {

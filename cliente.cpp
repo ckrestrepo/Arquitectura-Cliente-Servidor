@@ -49,15 +49,6 @@ int main()
 			cout <<"3. Salir...\n";
 			cout <<"Digite una opcion: ";
 			cin >> opcion;
-			/*
-			if (opcion == 1)
-			{
-				cout <<"Digite el primer numero: ";
-				cin >> b;
-				enviar(nosocket, inttostring(b));
-				cout <<recibir(nosocket);
-				cout <<"Digite el segundo numero: ";
-			}*/
 		}while (opcion < 0 || opcion > 3);
 		enviar(nosocket, inttostring(opcion));
 		cout <<recibir(nosocket)<<endl;
