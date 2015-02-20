@@ -36,7 +36,7 @@ int main()
 {	
 	iniciar();
 	conectar();
-	cout<<"Mensaje: " <<recibir(nosocket) <<endl;
+	cout<<"Mensaje: " <<recibir(nosocket) <<endl; // Recibido numero 1 
 	//Ciclo del servicio
 	int opcion, a, b;
 	do
@@ -50,18 +50,13 @@ int main()
 			cout <<"Digite una opcion: ";
 			cin >> opcion;
 		}while (opcion < 0 || opcion > 3);
-		enviar(nosocket, inttostring(opcion));
-		cout <<recibir(nosocket)<<endl;
+		enviar(nosocket, inttostring(opcion));	// Enviar numero 1
+		cout << recibir(nosocket) <<endl;		// Recibir numero 2
+		cout <<"Digite el primer numero: ";
+		cin >> a;
+		enviar(nosocket, inttostring(a));		// Enviar numero 2
+		cout <<recibir(nosocket) <<endl;
 	}while(opcion != 3);
-
-	/*
-	string msjenv;
-	msj[0] ='\0';
-	cout <<"Digite cualquier cosa: ";
-	cin >> msjenv;
-	strcpy(msj, msjenv.c_str()); // c_str() convierte a char
-	send(nosocket, msj, msjenv.size(), 0);
-	*/
 	close(nosocket);
 }
 

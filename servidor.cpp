@@ -42,15 +42,15 @@ int main ()
     while(1)
     {
         nuevo_socket = nueva_cx(nosocket);
-        verIP(cliente, nuevo_socket);
+        verIP(cliente, nuevo_socket);		// Enviar numero 1
         int opcion;
         do
         {
-            string valoropc = recibir(nuevo_socket);
-            cout <<"Cliente dice: " << valoropc <<endl;
+            string valoropc = recibir(nuevo_socket);		// Recibir numero 1
+            cout <<"Opcion del cliente: " << valoropc <<endl;
             //Cambiamos la cadena a entero
             opcion = stringtoint(valoropc);
-            enviar(nuevo_socket, "Acciona realizada");
+            enviar(nuevo_socket, "Acciona realizada");	// Enviar numero 2
             switch(opcion)
             {
             	case 1: 
@@ -70,13 +70,15 @@ int main ()
 
 void servicio1()
 {
-	cout <<"... Suma de dos digitos...\n";
-	//enviar(nuevo_socket, "En espera del primer numero: ");
+	cout <<"... Suma de dos digitos ...\n";
+	cout <<"En espera del primer numero...\n";
+	cout << recibir(nuevo_socket);
+	enviar(nuevo_socket, "Numero 1 recibido\n");
 }
 
 void servicio2()
 {
-	cout <<"Ha entrado al programa 2\n";
+	cout <<"... Contar Caracteres ...\n";
 }
 // Funcion que suma dos numeros
 int suma (int a, int b)
@@ -129,7 +131,7 @@ void verIP (struct sockaddr_in c, int sock)
     char*  dire;
     dire = inet_ntoa(c.sin_addr);
     cout <<"Direccion del cliente: " <<dire <<endl;
-    enviar(sock, "\n...Bienvenido al servidor...");
+    enviar(sock, "...Bienvenido al servidor...");
 }
 
 // Funcion que envia mensajes al cliente (tiene sobrecarga)
