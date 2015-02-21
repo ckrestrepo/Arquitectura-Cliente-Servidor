@@ -90,15 +90,21 @@ void servicio1()
 	cout << mensaje;
 	cout <<recibir(nuevo_socket);
 	enviar(nuevo_socket, mensaje);	// enviar resultado (4)
-	
 }
 
 void servicio2()
 {
-	string saludo;
-	cout <<"... Programa 2 ...\n";
-	saludo = recibir(nuevo_socket);
-	cout <<"El cliente ha entrado al programa\n" <<saludo <<endl;
+	string palabrarec, mensaje;
+    int res;
+	cout <<"... Contar Caracteres ...\n";
+	palabrarec = recibir(nuevo_socket);
+	cout <<"El cliente dice: " <<palabrarec <<endl;
+    enviar(nuevo_socket, "Palabra recibida");
+    res = palabrarec.size();
+    mensaje = "Tiene: " + inttostring(res) + " caracteres\n";
+    cout << mensaje;
+    cout <<recibir(nuevo_socket);
+    enviar(nuevo_socket, mensaje);
 }
 // Funcion que suma dos numeros
 int suma (int a, int b)

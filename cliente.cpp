@@ -40,6 +40,7 @@ int main()
 	cout<<"Mensaje: " <<recibir(nosocket) <<endl; // Recibido numero (1 )
 	//Ciclo del servicio
 	int a, b;
+	string palabra;
 	do
 	{
 		mostrar_menu();
@@ -60,7 +61,12 @@ int main()
 				cout <<recibir(nosocket) <<endl;		// Recibido del resultado (4)
 				break;
 			case 2:
-				enviar(nosocket, "He escogido el programa 2...\n");
+				cout <<"Digite la palabra: ";
+				cin >> palabra;
+				enviar(nosocket, palabra);
+				cout <<recibir(nosocket) <<endl;
+				enviar(nosocket, "\nGracias\n");
+				cout <<recibir(nosocket) <<endl;		
 				break;
 			case 3:
 				enviar(nosocket, "\nHe salido del servidor...\n");
