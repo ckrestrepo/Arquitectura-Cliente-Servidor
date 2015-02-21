@@ -25,6 +25,7 @@ void enviar(int);
 void enviar(int, string);
 int stringtoint(string);
 string inttostring(int);
+int suma(int, int);
 void servicio1();
 void servicio2();
 
@@ -42,15 +43,15 @@ int main ()
     while(1)
     {
         nuevo_socket = nueva_cx(nosocket);
-        verIP(cliente, nuevo_socket);		// Enviar numero 1
+        verIP(cliente, nuevo_socket);		// Enviar mensaje (1)
         int opcion;
         do
         {
-            string valoropc = recibir(nuevo_socket);		// Recibir numero 1
+            string valoropc = recibir(nuevo_socket);		// Recibir opcion del cliente (1)
             cout <<"Opcion del cliente: " << valoropc <<endl;
             //Cambiamos la cadena a entero
             opcion = stringtoint(valoropc);
-            enviar(nuevo_socket, "Acciona realizada");	// Enviar numero 2
+            enviar(nuevo_socket, "Opcion recibida");	// Enviar opcion recibida (2)
             switch(opcion)
             {
             	case 1: 
@@ -59,8 +60,13 @@ int main ()
             	case 2:
             		servicio2();
             		break;
+            	case 3:
+            		cout <<recibir(nuevo_socket);
+            		enviar(nuevo_socket, "\nGracias por visitar nuestro SERVIDOR\n"); //Enviar en caso de que sea la opcion 3
+            		break;
             	default:
-            		cout <<"Opcion incorrecta:..";
+            		cout <<"El cliente digito una opcion incorrecta..\n";
+            		break;
             }
         }while(opcion != 3);
         close(nuevo_socket);
@@ -70,15 +76,29 @@ int main ()
 
 void servicio1()
 {
+	string dato1, dato2, mensaje;
+	int resultado;
 	cout <<"... Suma de dos digitos ...\n";
-	cout <<"En espera del primer numero...\n";
-	cout << recibir(nuevo_socket);
-	enviar(nuevo_socket, "Numero 1 recibido\n");
+	dato1 = recibir(nuevo_socket);					// Recibio digito a (2)
+	cout << "Primer digito: " << dato1 <<endl;
+	enviar(nuevo_socket, "Numero 1 recibido\n");	// enviar informe de numero recibido (3)
+	dato2 = recibir(nuevo_socket);					// Recibio digito b (3)
+	cout << "Segundo digito: " << dato2 <<endl;
+	enviar(nuevo_socket, "Numero 2 recibido\n");	// enviar informe de numero recibido (4)
+	resultado = suma(stringtoint(dato1), stringtoint(dato2));
+	mensaje = "Resultado: " + inttostring(resultado);
+	cout << mensaje;
+	cout <<recibir(nuevo_socket);
+	enviar(nuevo_socket, mensaje);	// enviar resultado (4)
+	
 }
 
 void servicio2()
 {
-	cout <<"... Contar Caracteres ...\n";
+	string saludo;
+	cout <<"... Programa 2 ...\n";
+	saludo = recibir(nuevo_socket);
+	cout <<"El cliente ha entrado al programa\n" <<saludo <<endl;
 }
 // Funcion que suma dos numeros
 int suma (int a, int b)

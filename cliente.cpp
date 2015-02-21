@@ -18,7 +18,7 @@ using namespace std;
 #define MIPUERTO 9091
 #define MAXLONGITUD 128
 
-int nosocket, numbytes;
+int nosocket, numbytes, opcion;
 char msj[MAXLONGITUD];
 char const host_servidor[]="127.0.0.1";
 struct hostent *host_entrante;
@@ -31,33 +31,57 @@ string recibir(int);
 void enviar(int, string);
 int stringtoint(string);
 string inttostring(int);
+void mostrar_menu();
 
 int main()
 {	
 	iniciar();
 	conectar();
-	cout<<"Mensaje: " <<recibir(nosocket) <<endl; // Recibido numero 1 
+	cout<<"Mensaje: " <<recibir(nosocket) <<endl; // Recibido numero (1 )
 	//Ciclo del servicio
-	int opcion, a, b;
+	int a, b;
 	do
 	{
-		do
+		mostrar_menu();
+		enviar(nosocket, inttostring(opcion));	// Enviar opcion (1)
+		cout << recibir(nosocket) <<endl;		// Recibido de la opcion enviada (2)
+		switch(opcion)
 		{
-			cout <<"\n...Menu de Opciones...\n";
-			cout <<"1. Sumar\n";
-			cout <<"2. Contar caracteres\n";
-			cout <<"3. Salir...\n";
-			cout <<"Digite una opcion: ";
-			cin >> opcion;
-		}while (opcion < 0 || opcion > 3);
-		enviar(nosocket, inttostring(opcion));	// Enviar numero 1
-		cout << recibir(nosocket) <<endl;		// Recibir numero 2
-		cout <<"Digite el primer numero: ";
-		cin >> a;
-		enviar(nosocket, inttostring(a));		// Enviar numero 2
-		cout <<recibir(nosocket) <<endl;
+			case 1: 
+				cout <<"Digite el primer numero: ";
+				cin >> a;
+				enviar(nosocket, inttostring(a));		// Enviar primer digito (2)
+				cout <<recibir(nosocket) <<endl;		// Recibido por parte del servidor del primer digito (3)
+				cout <<"Digite el segundo numero: ";
+				cin >> b;
+				enviar(nosocket, inttostring(b));		// Enviar segundo dato (3)
+				cout <<recibir(nosocket) <<endl;		// Recibido por parte del servidor del segundo digite (4)
+				enviar(nosocket, "\nGracias\n");
+				cout <<recibir(nosocket) <<endl;		// Recibido del resultado (4)
+				break;
+			case 2:
+				enviar(nosocket, "He escogido el programa 2...\n");
+				break;
+			case 3:
+				enviar(nosocket, "\nHe salido del servidor...\n");
+				cout << recibir(nosocket) <<endl;
+				break;
+			default:
+				cout <<"Opcion incorrecta... Imbecil\n";
+				break;
+		}
 	}while(opcion != 3);
 	close(nosocket);
+}
+
+void mostrar_menu()
+{
+	cout <<"\n...Menu de Opciones...\n";
+	cout <<"1. Sumar\n";
+	cout <<"2. Contar caracteres\n";
+	cout <<"3. Salir...\n";
+	cout <<"Digite una opcion: ";
+	cin >> opcion;
 }
 
 

@@ -12,9 +12,25 @@
 #include <unistd.h>
 using namespace std;
 
-//Funciones de conversion
-//Sera mi libreria de conversiones
+//libreria de conversiones
+int stringtoint(string);
+string stringtoint(int);
+int suma(int, int);
 
+
+int main()
+{
+	string numstring, numstring2;
+	int res;
+	cout <<"Digite un numero: ";
+	cin >> numstring;
+	cout <<"Digite otro numero: ";
+	cin >> numstring2;
+	res = suma(stringtoint(numstring), stringtoint(numstring2));
+	//Suma de numeros
+	cout <<"La suma es: " << res <<endl;
+
+}
 // Convierte de cadena a entero
 int stringtoint(string x)
 {
@@ -31,20 +47,8 @@ string inttostring(int x)
 	return cadena;
 }
 
-
-int main()
+int suma(int a, int b)
 {
-	int numint, numint2;
-	string numstring, numstring2;
-	cout <<"\nPrimera prueba Int\n";
-	cout <<"Digite un numero: ";
-	cin >> numint;
-	numstring2 = inttostring(numint);
-	cout <<"Numero convertido a String: " << numstring2;
-	cout <<"\nSegunda prueba String\n";
-	cout <<"Digite una cadena (numero): ";
-	cin >> numstring;
-	numint2 = stringtoint(numstring);
-	cout <<"Cadena convertida a Int: " << numint2;
-	cout <<"\n!!!Nos vemos en la proxima!!!\n";
+	int resul = a + b;
+	return resul;
 }
