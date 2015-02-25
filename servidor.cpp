@@ -28,7 +28,7 @@ string inttostring(int);
 int suma(int, int);
 void servicio1();
 void servicio2();
-
+void servicio3();
 
 int nosocket, nuevo_socket;
 struct sockaddr_in dirservidor;
@@ -61,6 +61,9 @@ int main ()
             		servicio2();
             		break;
             	case 3:
+            		servicio3();
+            		break;
+            	case 0:
             		cout <<recibir(nuevo_socket);
             		enviar(nuevo_socket, "\nGracias por visitar nuestro SERVIDOR\n"); //Enviar en caso de que sea la opcion 3
             		break;
@@ -68,7 +71,7 @@ int main ()
             		cout <<"El cliente digito una opcion incorrecta..\n";
             		break;
             }
-        }while(opcion != 3);
+        }while(opcion != 0);
         close(nuevo_socket);
     } // fin del while (1)
     return 0;
@@ -105,6 +108,25 @@ void servicio2()
     cout << mensaje;
     cout <<recibir(nuevo_socket);
     enviar(nuevo_socket, mensaje);
+}
+
+void servicio3()
+{
+	string mensaje, numrec;
+	int i, res;
+	cout <<"... Multiplicacion ...\n";
+	numrec = recibir(nuevo_socket);
+	cout <<"Multiplos del  " << numrec <<endl;
+	for (i = 1; i <= 10; i++)
+	{
+		res = i * stringtoint(numrec);
+		mensaje = numrec + " * " + inttostring(i) + " = " + inttostring(res); 
+		cout << endl;
+		cout << mensaje;
+		enviar(nuevo_socket, mensaje);
+		cout <<recibir(nuevo_socket);
+	}
+
 }
 // Funcion que suma dos numeros
 int suma (int a, int b)

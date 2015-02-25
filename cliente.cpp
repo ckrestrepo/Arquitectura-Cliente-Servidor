@@ -39,7 +39,7 @@ int main()
 	conectar();
 	cout<<"Mensaje: " <<recibir(nosocket) <<endl; // Recibido numero (1 )
 	//Ciclo del servicio
-	int a, b;
+	int a, b, mul, i;
 	string palabra;
 	do
 	{
@@ -69,6 +69,17 @@ int main()
 				cout <<recibir(nosocket) <<endl;		
 				break;
 			case 3:
+				cout <<"Digite un numero: ";
+				cin >> mul;
+				enviar(nosocket, inttostring(mul));
+				for (i = 1; i<= 10; i++)
+				{
+					cout <<recibir(nosocket);
+					cout <<endl;
+					enviar(nosocket, "\nNumero recibido\n");
+				}
+				break;
+			case 0:
 				enviar(nosocket, "\nHe salido del servidor...\n");
 				cout << recibir(nosocket) <<endl;
 				break;
@@ -76,7 +87,7 @@ int main()
 				cout <<"Opcion incorrecta... Imbecil\n";
 				break;
 		}
-	}while(opcion != 3);
+	}while(opcion != 0);
 	close(nosocket);
 }
 
@@ -85,7 +96,8 @@ void mostrar_menu()
 	cout <<"\n...Menu de Opciones...\n";
 	cout <<"1. Sumar\n";
 	cout <<"2. Contar caracteres\n";
-	cout <<"3. Salir...\n";
+	cout <<"3. Tabla de multiplicar (n) hasta 10\n";
+	cout <<"0. Salir...\n";
 	cout <<"Digite una opcion: ";
 	cin >> opcion;
 }
