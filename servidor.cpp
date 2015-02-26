@@ -24,8 +24,10 @@ string recibir(int);
 void enviar(int);
 void enviar(int, string);
 int stringtoint(string);
+double stringtodouble(string);
 string inttostring(int);
 string doubletostring(double);
+
 int suma(int, int);
 void servicio1();
 void servicio2();
@@ -96,8 +98,8 @@ void servicio1()
 	resultado = suma(stringtoint(dato1), stringtoint(dato2));
 	mensaje = "Resultado: " + inttostring(resultado);
 	cout << mensaje;
-	cout <<recibir(nuevo_socket);
-	enviar(nuevo_socket, mensaje);	// enviar resultado (4)
+	cout <<recibir(nuevo_socket);					// Aceptar el gracias.... ¿Porque aparece al final? NO SE
+	enviar(nuevo_socket, mensaje);					// enviar resultado (4)
 }
 
 void servicio2()
@@ -126,7 +128,6 @@ void servicio3()
 	{
 		res = i * stringtoint(numrec);
 		mensaje = numrec + " * " + inttostring(i) + " = " + inttostring(res); 
-		cout << endl;
 		cout << mensaje;
 		enviar(nuevo_socket, mensaje);
 		cout <<recibir(nuevo_socket);
@@ -134,26 +135,25 @@ void servicio3()
 }
 void servicio4()
 {	
-	double promedio;
 	string dato, mensaje;
-	int i = 1, suma = 0, n = 0;
+	double i = 1, suma = 0, n = 0, promedio;
 	do
 	{
 		dato = recibir(nuevo_socket);					
 		cout << "Dato: " << dato <<endl;
 		if (dato != "fin")
 		{
-			suma = suma + stringtoint(dato);
+			suma = suma + stringtodouble(dato);
 			n++;
 		}
-		enviar(nuevo_socket, "Numero " + inttostring(i) + " recibido\n");	
+		enviar(nuevo_socket, "Dato " + doubletostring(i) + " recibido\n");	
 		i++;
 	}while(dato != "fin");
-	cout <<recibir(nuevo_socket);
+	cout <<recibir(nuevo_socket);				// Recibir el espera del promedio
 	promedio = suma/n;
 	mensaje = "Promedio: " + doubletostring(promedio);
-	cout << mensaje;
-	enviar(nuevo_socket, mensaje);
+	cout <<mensaje <<endl;
+	enviar(nuevo_socket, mensaje);				// Enviar el promedio
 }
 
 // Funcion que suma dos numeros
@@ -248,12 +248,19 @@ string recibir (int sock)
     return mensaje;
 }
 
+// De cadena a Entero
 int stringtoint(string x)
 {
     int valor = atoi(x.c_str());
     return valor;
 }
 
+// De cadena a Doble
+double stringtodouble(string x)
+{
+	double valor = atof(x.c_str());
+	return valor;
+}
 //Convierte de entero a cadena
 string inttostring(int x)
 {

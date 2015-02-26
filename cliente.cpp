@@ -32,7 +32,6 @@ void enviar(int, string);
 int stringtoint(string);
 string inttostring(int);
 void mostrar_menu();
-void menu2();
 
 int main()
 {	
@@ -42,7 +41,7 @@ int main()
 	//Ciclo del servicio
 	int a, b, mul, i;
 	double promedio;
-	string palabra, num;
+	string palabra;
 	do
 	{
 		mostrar_menu();
@@ -58,7 +57,7 @@ int main()
 				cout <<"Digite el segundo numero: ";
 				cin >> b;
 				enviar(nosocket, inttostring(b));		// Enviar segundo dato (3)
-				cout <<recibir(nosocket) <<endl;		// Recibido por parte del servidor del segundo digite (4)
+				cout <<recibir(nosocket) <<endl;		// Recibido por parte del servidor del segundo digito (4)
 				enviar(nosocket, "\nGracias\n");
 				cout <<recibir(nosocket) <<endl;		// Recibido del resultado (4)
 				break;
@@ -84,12 +83,12 @@ int main()
 			case 4:
 				do
 				{
-					cout <<"Digite numero: ";
-					cin >> num;
-					enviar(nosocket, num);
+					cout <<"Digite un numero o fin para sacar promedio: ";
+					cin >> palabra;
+					enviar(nosocket, palabra);
 					cout <<recibir(nosocket) <<endl;
 				}while(palabra != "fin");
-				enviar(nosocket, "\nEn espera del resultado...\n");
+				enviar(nosocket, "\nGracias...\n");
 				cout <<recibir(nosocket) <<endl;
 				break;
 			case 0:

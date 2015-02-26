@@ -15,21 +15,30 @@ using namespace std;
 //libreria de conversiones
 int stringtoint(string);
 string stringtoint(int);
+string doubletostring(double);
+double stringtodouble(string);
+
 int suma(int, int);
 
 
 int main()
 {
-	string numstring, numstring2;
-	int res;
-	cout <<"Digite un numero: ";
-	cin >> numstring;
-	cout <<"Digite otro numero: ";
-	cin >> numstring2;
-	res = suma(stringtoint(numstring), stringtoint(numstring2));
-	//Suma de numeros
-	cout <<"La suma es: " << res <<endl;
-
+	cout <<"\n...Seccion de Pruebas...\n";
+	string palabra;
+	double suma = 0, n = 0, promedio;
+	do
+	{
+		cout <<"Digite un numero: ";
+		cin >> palabra;
+		if (palabra != "fin")
+		{
+			suma = suma + stringtodouble(palabra);
+			n++;
+		}
+	}while(palabra != "fin");
+	promedio = suma / n;
+	cout <<"Promedio en double: " << promedio <<endl;
+	cout <<"Promedio en String: " + doubletostring(promedio) <<endl;
 }
 // Convierte de cadena a entero
 int stringtoint(string x)
@@ -45,6 +54,20 @@ string inttostring(int x)
 	stream << x ;
 	string cadena = stream.str();
 	return cadena;
+}
+
+string doubletostring(double x)
+{
+    stringstream ss;
+    ss<<x;
+    string cadena = ss.str();
+    return cadena;
+}
+
+double stringtodouble(string x)
+{
+	double valor = atof(x.c_str());
+	return valor;
 }
 
 int suma(int a, int b)
