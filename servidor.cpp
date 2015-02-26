@@ -25,10 +25,12 @@ void enviar(int);
 void enviar(int, string);
 int stringtoint(string);
 string inttostring(int);
+string doubletostring(double);
 int suma(int, int);
 void servicio1();
 void servicio2();
 void servicio3();
+void servicio4();
 
 int nosocket, nuevo_socket;
 struct sockaddr_in dirservidor;
@@ -62,6 +64,9 @@ int main ()
             		break;
             	case 3:
             		servicio3();
+            		break;
+            	case 4:
+            		servicio4();
             		break;
             	case 0:
             		cout <<recibir(nuevo_socket);
@@ -126,8 +131,31 @@ void servicio3()
 		enviar(nuevo_socket, mensaje);
 		cout <<recibir(nuevo_socket);
 	}
-
 }
+void servicio4()
+{	
+	double promedio;
+	string dato, mensaje;
+	int i = 1, suma = 0, n = 0;
+	do
+	{
+		dato = recibir(nuevo_socket);					
+		cout << "Dato: " << dato <<endl;
+		if (dato != "fin")
+		{
+			suma = suma + stringtoint(dato);
+			n++;
+		}
+		enviar(nuevo_socket, "Numero " + inttostring(i) + " recibido\n");	
+		i++;
+	}while(dato != "fin");
+	cout <<recibir(nuevo_socket);
+	promedio = suma/n;
+	mensaje = "Promedio: " + doubletostring(promedio);
+	cout << mensaje;
+	enviar(nuevo_socket, mensaje);
+}
+
 // Funcion que suma dos numeros
 int suma (int a, int b)
 {
@@ -233,5 +261,14 @@ string inttostring(int x)
     ss<<x;
     string cadena = ss.str();
     return cadena;
+}
+
+//Convierte de doble a cadena
+string doubletostring(double x)
+{
+	stringstream ss;
+	ss << x;
+	string cadena = ss.str();
+	return cadena;
 }
 
