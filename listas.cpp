@@ -24,7 +24,7 @@ int main()
 	list <persona> ppl;
 	ppl = leerp();
 	mostrarp(ppl);	
-	eliminar(ppl);
+	ppl = eliminar(ppl);
 	mostrarp(ppl);
 }
 
@@ -33,13 +33,14 @@ int main()
 void mostrarp(list<persona> per)
 {
 	cout <<"Cantidad de personas: " <<per.size() <<endl;
-	list <persona>:: iterator i;
-	for (i=per.begin(); i!= per.end(); i++)
+	list <persona>:: iterator i = per.begin();
+	while (i!= per.end())
 	{
 		persona p;
 		p =*i;
 		cout <<"Nombre: "<< p.nombre<< endl;
 		cout <<"Apellido: "<< p.apellido <<endl;
+		i++;
 	}	
 }
 
@@ -65,15 +66,12 @@ list<persona> leerp()
 //Eliminar personas
 list<persona> eliminar(list<persona> per)
 {
-	string nombre, apellido;
 	persona p;
 	cout <<"Digite el nombre: ";
 	cin >> p.nombre;
 	cout <<"Digite el apellido: ";
 	cin >> p.nombre;
-	nombre = p.nombre;
-	apellido = p.nombre;
-	per.remove_if((p.nombre == nombre)&&(p.apellido == apellido));
+	per.remove(p);
 	return per;
 }
 
