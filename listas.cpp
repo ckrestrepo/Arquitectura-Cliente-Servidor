@@ -17,6 +17,7 @@ list<int> leer();
 void mostrarp(list<persona>);
 list<persona> leerp();
 list<persona> eliminar(list<persona>);
+bool comparar(persona, string, string);
 
 int main()
 {
@@ -29,20 +30,6 @@ int main()
 }
 
 // PARA PERSONAS
-
-void mostrarp(list<persona> per)
-{
-	cout <<"Cantidad de personas: " <<per.size() <<endl;
-	list <persona>:: iterator i = per.begin();
-	while (i!= per.end())
-	{
-		persona p;
-		p =*i;
-		cout <<"Nombre: "<< p.nombre<< endl;
-		cout <<"Apellido: "<< p.apellido <<endl;
-		i++;
-	}	
-}
 
 // Agregar personas
 list<persona> leerp()
@@ -62,21 +49,43 @@ list<persona> leerp()
 	}while(opcion != 0);
 	return per;
 }
-
+void mostrarp(list<persona> per)
+{
+	cout <<"Cantidad de personas: " <<per.size() <<endl;
+	list <persona>:: iterator i = per.begin();
+	while (i!= per.end())
+	{
+		persona p;
+		p =*i;
+		cout <<"Nombre: "<< p.nombre<< endl;
+		cout <<"Apellido: "<< p.apellido <<endl;
+		i++;
+	}	
+}
 //Eliminar personas
+
 list<persona> eliminar(list<persona> per)
 {
-	persona p;
-	cout <<"Digite el nombre: ";
-	cin >> p.nombre;
-	cout <<"Digite el apellido: ";
-	cin >> p.nombre;
-	per.remove(p);
+	list<persona>:: iterator iter;
+	//for (iter = per.begin(); iter != per.end(); iter++)
+//	{
+		persona p;
+		p = *iter;	
+		string nombre="", apellido="";
+		cout <<"Digite el nombre: ";
+		cin >> nombre;
+		cout <<"Digite el apellido: ";
+		cin >> apellido;
+		per.remove_if(per.begin(), per.end(), comparar(p, nombre, apellido));
+		//per.erase(iter, per.end());
+//	}
 	return per;
 }
 
-
-
+bool comparar(persona person, string nomb, string apell)
+{
+	return ((nomb == person.nombre) && (apell == person.apellido));
+}
 
 
 // PARA ENTEROS
