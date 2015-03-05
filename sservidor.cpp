@@ -32,6 +32,7 @@ string doubletostring(double);
 
 void servicio1();
 void servicio2();
+void servicio3();
 
 
 int nosocket, nuevo_socket;
@@ -74,6 +75,9 @@ int main ()
             		break;
             	case 2:
             		servicio2();
+            		break;
+            	case 3:
+            		servicio3();
             		break;
             	case 0:
             		cout <<recibir(nuevo_socket);
@@ -143,6 +147,37 @@ void servicio2()
     {
     	enviar(nuevo_socket, "Usuario SIN acceso al sistema\n");
     }
+}
+
+void servicio3()
+{
+	int opcion;
+	bool existe = false;
+	persona p;
+	string usuario = recibir(nuevo_socket);
+	cout <<"ID del usuario: " <<p.usuario <<endl;
+	list <persona>:: iterator i = ppl.begin();
+	while (i!= ppl.end())
+	{
+		persona p;
+		p =*i;
+		if (p.usuario == usuario){existe = true;}
+		i++;
+	}
+	if (existe)
+	{
+		switch()
+		{
+		
+		}
+		enviar(nuevo_socket, "Usuario Existe");
+		p.nombre = recibir(nuevo_socket);	
+		cout <<"Nombre nuevo: " <<p.nombre <<endl;
+		enviar(nuevo_socket, "Nombre modificado");	
+	}
+	else {enviar(nuevo_socket, "Usuario NO Existe");}
+	
+	
 }
 
 
