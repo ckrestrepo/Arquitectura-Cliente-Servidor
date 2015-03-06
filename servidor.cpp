@@ -1,4 +1,5 @@
 /* ..... SERVIDOR ....*/
+#include "stdio.h"
 #include "unistd.h"
 #include "iostream"
 #include "stdlib.h"
@@ -136,24 +137,28 @@ void servicio3()
 void servicio4()
 {	
 	string dato, mensaje;
-	double i = 1, suma = 0, n = 0, promedio;
-	do
+	char cad[MAXLONGITUD];
+	double suma = 0, n = 0, promedio;
+	dato = recibir(nuevo_socket);
+	cout <<"Numeros enviados: " << dato <<endl;
+	strcpy(cad, dato.c_str());
+	char *numero;
+	numero = strtok (cad, "-");
+	while(numero != NULL)
 	{
-		dato = recibir(nuevo_socket);					
-		cout << "Dato: " << dato <<endl;
-		if (dato != "fin")
-		{
-			suma = suma + stringtodouble(dato);
+		cout << "Numero: " <<numero <<endl;	
+		if (numero != NULL)
+		{	
+			suma = suma + atoi(numero);
 			n++;
+			cout <<"suma: " <<suma <<endl;
 		}
-		enviar(nuevo_socket, "Dato " + doubletostring(i) + " recibido\n");	
-		i++;
-	}while(dato != "fin");
-	cout <<recibir(nuevo_socket);				// Recibir el espera del promedio
-	promedio = suma/n;
+		numero = strtok (NULL, "-");	
+	}
+	promedio = suma/(n-1);	
 	mensaje = "Promedio: " + doubletostring(promedio);
 	cout <<mensaje <<endl;
-	enviar(nuevo_socket, mensaje);				// Enviar el promedio
+	enviar(nuevo_socket, mensaje);			// Enviar el promedio
 }
 
 // Funcion que suma dos numeros

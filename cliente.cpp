@@ -81,15 +81,17 @@ int main()
 				}
 				break;
 			case 4:
-				do
+			{
+				string completo = "", palabra = "";
+				while (palabra != "0")
 				{
-					cout <<"Digite un numero o fin para sacar promedio: ";
+					cout <<"Digite un numero o cero para sacar promedio: ";
 					cin >> palabra;
-					enviar(nosocket, palabra);
-					cout <<recibir(nosocket) <<endl;
-				}while(palabra != "fin");
-				enviar(nosocket, "\nGracias...\n");
-				cout <<recibir(nosocket) <<endl;
+					completo = completo + palabra+"-";
+				}
+				enviar(nosocket, completo);
+				cout << recibir(nosocket);
+			}
 				break;
 			case 0:
 				enviar(nosocket, "\nHe salido del servidor...\n");

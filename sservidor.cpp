@@ -175,21 +175,18 @@ void servicio3()
 	        		p.nombre = recibir(nuevo_socket);
 	        		cout <<"Nombre Modificado es: " <<p.nombre <<endl;
 	        		enviar (nuevo_socket, "Nombre modificado");
-	        		ppl.push_back(p);
 	        		break;
 	        	case 2:
 	        		cout <<"Usuario actual: " <<p.usuario <<endl;
 	        		p.usuario = recibir(nuevo_socket);
 	        		cout <<"Usuario Modificado es: " <<p.usuario <<endl;
 	        		enviar (nuevo_socket, "Usuario modificado");
-	        		ppl.push_back(p);
 	        		break;
 	        	case 3:
 	        		cout <<"Contraseña actual: " <<p.pw <<endl;
 	        		p.pw = recibir(nuevo_socket);
 	        		cout <<"Contraseña nueva es: " <<p.pw <<endl;
 	        		enviar (nuevo_socket, "Contraseña modificada");
-	        		ppl.push_back(p);
 	        		break;
 	        	case 0:
             		cout <<recibir(nuevo_socket);
