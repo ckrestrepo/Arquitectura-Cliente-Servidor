@@ -28,13 +28,9 @@ int stringtoint(string);
 double stringtodouble(string);
 string inttostring(int);
 string doubletostring(double);
-
-
 void servicio1();
 void servicio2();
 void servicio3();
-
-
 int nosocket, nuevo_socket;
 struct persona
 {	
@@ -45,10 +41,12 @@ struct persona
 };
 
 bool autenticarR(list<persona>, string, string);
+void mostrarp(list<persona>);
 list <persona> ppl;
 struct sockaddr_in dirservidor;
 struct sockaddr_in cliente;
 socklen_t senal_tam;
+persona p;
 
 
 int main ()
@@ -111,16 +109,16 @@ bool autenticarR(list<persona> per, string user, string pass)
 
 void servicio1()
 {
-	persona p;
+	//persona p;
 	p.dirIP = inet_ntoa(cliente.sin_addr);
 	p.nombre = recibir(nuevo_socket);	
-	cout <<"El cliente dice: " <<p.nombre <<endl;
+	cout <<"Nombre: " <<p.nombre <<endl;
     enviar(nuevo_socket, "Nombre recibido");
     p.usuario = recibir(nuevo_socket);	
-	cout <<"El cliente dice: " <<p.usuario <<endl;
+	cout <<"Usuario: " <<p.usuario <<endl;
     enviar(nuevo_socket, "Usuario recibido");
     p.pw = recibir(nuevo_socket);	
-    cout <<"El cliente dice: " <<p.pw <<endl;
+    cout <<"Contraseña: " <<p.pw <<endl;
     enviar(nuevo_socket, "Contraseña almacenada\n");
     cout <<"Direccion del cliente: " <<p.dirIP <<endl;
     ppl.push_back(p);
@@ -129,16 +127,14 @@ void servicio1()
 
 void servicio2()
 {
-	persona p;
+	//persona p;
 	bool existe;
 	p.usuario = recibir(nuevo_socket);	
 	cout <<"ID del registro: " <<p.usuario <<endl;
     enviar(nuevo_socket, "ID recibido");
     p.pw = recibir(nuevo_socket);	
     cout <<"Password del cliente: " <<p.pw <<endl;
-    enviar(nuevo_socket, "Contraseña Recibida\n");
     existe = autenticarR(ppl, p.usuario, p.pw);
-    cout <<recibir(nuevo_socket);
     if (existe == true)
     {
 	    enviar(nuevo_socket, "Usuario con acceso\n");
@@ -151,35 +147,82 @@ void servicio2()
 
 void servicio3()
 {
-	int opcion;
+	int opcion2;
 	bool existe = false;
-	persona p;
-	string usuario = recibir(nuevo_socket);
-	cout <<"ID del usuario: " <<p.usuario <<endl;
+	//persona p;
+	string usuario, valoropc;
+	usuario = recibir(nuevo_socket);
 	list <persona>:: iterator i = ppl.begin();
 	while (i!= ppl.end())
 	{
-		persona p;
 		p =*i;
 		if (p.usuario == usuario){existe = true;}
 		i++;
 	}
-	if (existe)
+	if (existe = true) 
 	{
-		switch()
-		{
-		
-		}
 		enviar(nuevo_socket, "Usuario Existe");
-		p.nombre = recibir(nuevo_socket);	
-		cout <<"Nombre nuevo: " <<p.nombre <<endl;
-		enviar(nuevo_socket, "Nombre modificado");	
+		do
+		{
+			valoropc = recibir(nuevo_socket);
+			cout <<"Opcion del cliente: " << valoropc <<endl;
+			opcion2 = stringtoint(valoropc);
+	        enviar(nuevo_socket, "Opcion recibida");
+	        switch(opcion2)
+	        {
+	        	case 1: 
+	        		cout <<"Nombre actual: " <<p.nombre <<endl;
+	        		p.nombre = recibir(nuevo_socket);
+	        		cout <<"Nombre Modificado es: " <<p.nombre <<endl;
+	        		enviar (nuevo_socket, "Nombre modificado");
+	        		ppl.push_back(p);
+	        		break;
+	        	case 2:
+	        		cout <<"Usuario actual: " <<p.usuario <<endl;
+	        		p.usuario = recibir(nuevo_socket);
+	        		cout <<"Usuario Modificado es: " <<p.usuario <<endl;
+	        		enviar (nuevo_socket, "Usuario modificado");
+	        		ppl.push_back(p);
+	        		break;
+	        	case 3:
+	        		cout <<"Contraseña actual: " <<p.pw <<endl;
+	        		p.pw = recibir(nuevo_socket);
+	        		cout <<"Contraseña nueva es: " <<p.pw <<endl;
+	        		enviar (nuevo_socket, "Contraseña modificada");
+	        		ppl.push_back(p);
+	        		break;
+	        	case 0:
+            		cout <<recibir(nuevo_socket);
+            		enviar(nuevo_socket, "\nMenu de inicio principal\n"); 
+            		break;
+            	default:
+            		cout <<"El cliente digito una opcion incorrecta..\n";
+            		break;
+	        }
+	        mostrarp(ppl);
+	     }while(opcion2 != 0);
 	}
 	else {enviar(nuevo_socket, "Usuario NO Existe");}
-	
-	
 }
 
+void mostrarp(list<persona> per)
+{
+	int registro = 1;
+	cout <<"Cantidad de personas: " <<per.size() <<endl;
+	list <persona>:: iterator i = per.begin();
+	while (i!= per.end())
+	{
+		//persona p;
+		p =*i;
+		cout <<"\nRegistro: " << registro <<endl;;
+		cout <<"Nombre: "<< p.nombre<< endl;
+		cout <<"Usuario: "<< p.usuario <<endl;
+		cout <<"Password: "<< p.pw <<endl;
+		cout <<"Direccion IP: "<< p.dirIP <<endl;
+		i++;
+		registro++;
+	}	
+}
 
 // Funcion que inicializa el servidor
 int inicializar ()

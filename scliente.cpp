@@ -58,17 +58,13 @@ int main()
 				cin >> usuario;
 				enviar (nosocket, usuario);
 				cout <<recibir(nosocket) <<endl;
-				cout <<"Digite la contraseña: ";
-				cin >> pw1;
-				cout <<"Vuelva a escribir la contraseña: ";
-				cin >> pw2;
-				while(pw1 != pw2)
+				do
 				{
 					cout <<"Digite la contraseña: ";
 					cin >> pw1;
 					cout <<"Vuelva a escribir la contraseña: ";
 					cin >> pw2;
-				}
+				}while(pw1 != pw2);
 				enviar (nosocket, pw2);
 				cout <<recibir(nosocket) <<endl;
 				break;
@@ -80,51 +76,59 @@ int main()
 				cout <<"Digite la contraseña: ";
 				cin >> pw1;
 				enviar (nosocket, pw1);
-				cout <<recibir(nosocket) <<endl;
-				enviar (nosocket, "Estoy registrado?...\n");
 				cout <<recibir(nosocket)<<endl;
 				break;
 			case 3:
-				do
+			{
+				string recibido;
+				cout <<"\nDigite su ID para comprobar su registro: ";
+				cin >> usuario;
+				enviar (nosocket, usuario);
+				recibido = recibir(nosocket);
+				cout << recibido <<endl;
+				if (recibido == "Usuario Existe")
 				{
-					menu2();
-					string menrec="";
-					enviar(nosocket, inttostring(opmenu2));
-					cout << recibir(nosocket) <<endl;
-					cout <<"\nDigite su ID para comprobar que esta registrado: ";
-					cin >> usuario;
-					enviar (nosocket, usuario);
-					menrec = recibir(nosocket);
-					cout << menrec <<endl;
-					switch(opmenu2)
+					do
 					{
-						case 1:
-							if (menrec == "Usuario Existe")
-							{
-								cout <<"Digite nuevo nombre: ";
+						menu2();
+						enviar(nosocket, inttostring(opmenu2));
+						cout << recibir(nosocket) <<endl;
+						switch(opmenu2)
+						{
+							case 1:
+								cout <<"Digite el nombre nuevo: ";
 								cin >> nombre;
-								enviar(nosocket, nombre);
-								cout <<recibir(nosocket) <<endl; // Debe de decir nombre modificado
-							}
-							else
-							{
-								
-							}
-							break;
-						case 2:
-							break;
-						case 3:
-							break;
-						case 0:
-							enviar(nosocket, "\nHe salido del servidor...\n");
-							cout << recibir(nosocket) <<endl;
-							break;
-						default:
-							cout <<"Opcion incorrecta... Imbecil\n";
-							break;				
-					}
-				}while(opmenu2 != 0);
-				break;
+								enviar (nosocket, nombre);
+								cout <<recibir(nosocket) <<endl;
+								break;
+							case 2:
+								cout <<"Escriba el usuario nuevo: ";
+								cin >> usuario;
+								enviar (nosocket, usuario);
+								cout <<recibir(nosocket) <<endl;
+								break;
+							case 3:
+								do
+								{
+									cout <<"Digite la contraseña nueva: ";
+									cin >> pw1;
+									cout <<"Vuelva a escribir la contraseña: ";
+									cin >> pw2;
+								}while(pw1 != pw2);
+								enviar (nosocket, pw2);
+								cout <<recibir(nosocket) <<endl;
+								break;
+							case 0:
+								enviar(nosocket, "\nHe salido de Modificar\n");
+								cout << recibir(nosocket) <<endl;
+								break;
+							default:
+								cout <<"Opcion incorrecta... Imbecil\n";
+								break;				
+						}
+					}while(opmenu2 != 0);
+				}
+			}break;
 			case 0:
 				enviar(nosocket, "\nHe salido del servidor...\n");
 				cout << recibir(nosocket) <<endl;
