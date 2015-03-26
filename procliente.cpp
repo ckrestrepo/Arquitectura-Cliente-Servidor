@@ -16,13 +16,13 @@
 
 using namespace std;
 
-#define MIPUERTO 9091
+#define MIPUERTO 9090
 #define MAXLONG 256
 
 int nosocket, numbytes;
 string mensaje;
 char msj[MAXLONG];
-char const host_servidor[]="127.0.0.1";
+char const host_servidor[]="192.168.8.157";
 struct hostent *host_entrante;
 struct sockaddr_in servidor;
 
@@ -38,7 +38,7 @@ int main()
 	conectar();
 	int env;
 	mensaje = recibir(nosocket);
-	cout <<"Mensaje: "<<mensaje <<endl;
+	cout <<mensaje <<endl;
 	//Gestion de servicio
 	int op = 0;
 	string ms;

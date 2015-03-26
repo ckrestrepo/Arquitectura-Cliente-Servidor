@@ -15,8 +15,8 @@
 
 using namespace std;
 
-#define MIPUERTO 9091   //pto de conexion para usuarios
-#define MIIP "127.0.0.1"
+#define MIPUERTO 9090   //pto de conexion para usuarios
+#define MIIP "192.168.8.79"
 #define ENCOLA 10       //numero conexiones permitidas
 #define MAXLONG 256
 
@@ -25,6 +25,7 @@ int inicializar();
 int Recibir (int);
 void Responder (int);
 void Enviar (int, struct sockaddr_in);
+int nueva_cx (int);
 
 
 //Variables "globales"
@@ -36,49 +37,38 @@ socklen_t lon;
 int main()
 {
 	inicializar();
-    cout <<"\n...Bienvenido al servidor...\n";
-	
-	//inisocket();
-	//iniservidor();
-	//inienlace();
+    cout <<"\n...Servidor Iniciado...\n";
 	int fin = 1;
 	do
 	{
-		lon = sizeof(struct sockaddr_in);
-		nuevo = accept(nosocket, (struct sockaddr *)&cliente, &lon);
-		if (nuevo == -1)
+		nuevo = nueva_cx(nosocket);
+		pid_t idProceso;
+		int estadoHijo;
+		idProceso = fork();
+		if(idProceso == -1)
 		{
-			cout <<"Error en Accept\n";
+			perror ("No se puede crear el proceso\n");
+			exit(-1);
 		}
-		else
+		//Hijo
+		if (idProceso == 0)
 		{
-			pid_t idProceso;
-			int estadoHijo;
-			if((idProceso = fork()) == -1)
+			int estado = 0;
+			//Ciclo de servicio del Hijo
+			do
 			{
-				perror ("No se puede crear el proceso\n");
-				exit(-1);
-			}
-			//Hijo
-			if (idProceso == 0)
-			{
-				int estado = 0;
-				//Ciclo de servicio del Hijo
-				do
+				estado = Recibir(nuevo);
+				if(estado == 1)
 				{
-					estado = Recibir(nuevo);
-					if(estado == 1)
-					{
-						Responder(nuevo);
-					}
-				}while ((estado != 33) && (estado != -1));
-				exit (33);
-			}
-			if(idProceso > 0)
-			{
-				Enviar(nuevo, cliente);
-			}
-		}// Fin si accept
+					Responder(nuevo);
+				}
+			}while ((estado != 33) && (estado != -1));
+			exit (33);
+		}
+		if(idProceso > 0)
+		{
+			Enviar(nuevo, cliente);
+		}
 	}while (fin == 1);
 	return 0;
 }
@@ -94,7 +84,7 @@ int inicializar ()
     }
     dirservidor.sin_family = AF_INET;
     dirservidor.sin_port = htons(MIPUERTO);
-    dirservidor.sin_addr.s_addr = inet_addr("127.0.0.1");
+    dirservidor.sin_addr.s_addr = inet_addr("192.168.8.79");
     bzero(&(dirservidor.sin_zero),8);
     if (bind(nosocket, (struct sockaddr*)&dirservidor, sizeof(struct sockaddr))==-1)
     {
@@ -106,6 +96,19 @@ int inicializar ()
         cout <<"Error en listen()" <<endl;
         exit(-1);
     }
+}
+
+// Funcion que hace una nueva conexion
+int nueva_cx (int sock)
+{
+    lon = sizeof(struct sockaddr_in);
+    int ns = accept(sock, (struct sockaddr*)&cliente, &lon);
+    if (nuevo == -1)
+    {
+        cout <<"error en accept()" << endl;
+        exit(-1);
+    }
+    return ns;
 }
 
 int Recibir (int ns)
