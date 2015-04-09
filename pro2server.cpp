@@ -29,14 +29,23 @@ struct usuarios
 	int idint;
 };
 
+struct servicios
+{
+	string idservicio;
+	string info;
+};
+
 list<usuarios> users;
 usuarios us;
+servicios ser;
 
 //Definicion de Funciones
 int inicializar();
-int Recibir (int);
+//int Recibir (int);
+ser Recibir(int);
 void Responder (int);
-void Enviar (int, struct sockaddr_in);
+void Enviarinicial (int, struct sockaddr_in);
+void Enviar (int, string, string);
 int nueva_cx (int);
 void mostrar(list<usuarios>);
 
@@ -66,28 +75,22 @@ int main()
 		//Hijo
 		if (idProceso == 0)
 		{
-			int estado = 0;
 			//Ciclo de servicio del Hijo
 			do
 			{
-				estado = Recibir(nuevo);
-				if(estado == 1)
+				ser.idservicio = Recibir(nuevo);
+				//31: "Servicio 1"
+				if(ser.idservicio == "31")
 				{
-					Responder(nuevo);
+					Servicio1(nuevo);
 				}
-				if(estado == 2)
-				{
-					//Enviar la lista de usuarios
-					Responder(nuevo);
-					//Enviar(info);
-				}
-			}while ((estado != 33) && (estado != -1));
+			}while (ser.idservicio != "2");
 			exit (33);
 		}
 		//Padre
 		if(idProceso > 0)
 		{
-			Enviar(nuevo, cliente);
+			Enviarinicial(nuevo, cliente);
 			us.user = "vacio";
 			char *dire;
 			dire = inet_ntoa(cliente.sin_addr);
@@ -100,6 +103,23 @@ int main()
 	return 0;
 }
 
+void servicio1(int ns)
+{
+	//Solicitar lista al padre mediante tuberia
+	sitrng info, mensaje;
+	list<usuarios>::iterator i;
+	for (i = ns.begin(); i != ns.end(); i++)
+	{
+		us = *i;
+		mensaje = aCad(us.idint) + ":" + us.user;
+		Enviar(ns, "30", mensaje);
+		ser = Recibir(ns);
+		cout <<ser.info<<endl;
+	}
+	Enviar(ns, "3", "fin");
+	ser = Recibir(ns);
+	cout <<ser.info <<endl;
+}
 
 void mostrar(list<usuarios> usr)
 {
@@ -156,42 +176,61 @@ int nueva_cx (int sock)
     return ns;
 }
 
-int Recibir (int ns)
+ser Recibir (int ns)
 {
+	ser infoservicio;
 	int nb, salida;
 	char msj[MAXLONG];
 	nb = recv(ns, msj, MAXLONG, 0);
 	if(nb == -1)
 	{
 		cout <<"Error al recibir.\n";
-		salida = -1;
+		infoservicio.idservicio = "10";
+		infoservicio.info = "Error al recibir";
 	}
 	if (nb == 0)
 	{
 		cout <<"Conexion finalizada\n";
 		close(ns);
-		salida = 33;
+		infoservicio.idservicio = "4";
+		infoservicio.info = "Conexion finalizada sin problemas";
 	}
 	if (nb > 0)
 	{
 		msj[nb] = '\0';
 		cout <<"Mensaje del cliente [" <<ns <<"]: " <<msj <<endl;
+		char datos[MAXLONG];
+		string info, id;
+		datos = msj;
 		msj[0] = '\0';
-		salida = 1;
+		char *palabra;
+		palabra = strtok (datos, ",");
+		id = (string)palabra;
+		palabra = strtok (NULL, ",");
+		info = (string)palabra;
+		infoservicio.idservicio = id;
+		infoservicio.info = info;		
 	}
-	return salida;
+	return infoservicio;
 }
 
 void Responder (int ns)
 {
-    send(ns, "Breve la vuelta...\n", 19, 0);
+    send(ns, "1,Recibido", 10, 0);
 }
 
-void Enviar (int ns, struct sockaddr_in cl)
+void Enviarinicial (int ns, struct sockaddr_in cl)
 {
 	char *dire;
 	dire = inet_ntoa(cl.sin_addr);
-	send(ns, "\n....Bienvenido al Servidor ...\n", 34, 0);
+	send(ns, "\n30,....Bienvenido al Servidor ...\n", 38, 0);
 	cout <<"Direccion entrante: "<<dire <<endl;
 }
 
+void Enviar (int ns, string idservicio, string infoservicio)
+{
+	char msjenv[MAXLONG];
+	string mb = idservicio + "," + infoservicio;
+	strcpy(msjenv, mbc_str());
+	send(ns, msjenv, mb.size(), 0);
+}
