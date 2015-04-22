@@ -22,38 +22,38 @@ using namespace std;
 #define MAXLONG 256
 
 //Estructuras
-struct usuarios
+typedef struct usuarios
 {
 	string user;
 	string ip;
 	int idint;
-};
+}users;
 
-struct servicios
+typedef struct servicios
 {
 	string idservicio;
 	string info;
-};
+}ds;
 
-list<usuarios> users;
-usuarios us;
-servicios ser;
+list<users> l_us;
 
 //Definicion de Funciones
 int inicializar();
 //int Recibir (int);
-ser Recibir(int);
+ds Recibir(int);
 void Responder (int);
 void Enviarinicial (int, struct sockaddr_in);
 void Enviar (int, string, string);
 int nueva_cx (int);
 void mostrar(list<usuarios>);
+void Abrir();
+void Servicio1(int);
 
+struct sockaddr_in dirservidor;
+struct sockaddr_in cliente;
 
 //Variables "globales"
 int nosocket, nuevo;
-struct sockaddr_in dirservidor;
-struct sockaddr_in cliente;
 socklen_t lon;
 
 int main()
@@ -75,34 +75,46 @@ int main()
 		//Hijo
 		if (idProceso == 0)
 		{
+			ds iserv;
 			//Ciclo de servicio del Hijo
 			do
 			{
-				ser.idservicio = Recibir(nuevo);
+				iserv = Recibir(nuevo);
 				//31: "Servicio 1"
-				if(ser.idservicio == "31")
+				cout <<"ID: "<<iserv.idservicio <<"Info: " <<iserv.info <<endl;
+				if(iserv.idservicio == "31")
 				{
 					Servicio1(nuevo);
 				}
-			}while (ser.idservicio != "2");
+			}while (iserv.idservicio != "2");
 			exit (33);
 		}
 		//Padre
 		if(idProceso > 0)
 		{
 			Enviarinicial(nuevo, cliente);
+			users us;
 			us.user = "vacio";
 			char *dire;
 			dire = inet_ntoa(cliente.sin_addr);
 			us.ip = (string)dire;
 			us.idint = nuevo;
-			users.push_back(us);
-			mostrar(users);
+			l_us.push_back(us);
+			mostrar(l_us);
 		}
 	}while (fin == 1);
 	return 0;
 }
 
+void Servicio1(int ns)
+{
+	//Solicitar lista al padre mediante tuberias nombrada
+	string info;
+	//Inicia con enviar
+	Enviar(ns, "30","Extrayendo...");
+	//Abrir();
+}
+/*
 void servicio1(int ns)
 {
 	//Solicitar lista al padre mediante tuberia
@@ -120,14 +132,15 @@ void servicio1(int ns)
 	ser = Recibir(ns);
 	cout <<ser.info <<endl;
 }
-
-void mostrar(list<usuarios> usr)
+*/
+void mostrar(list<users> usr)
 {
 	int registro = 1;
 	cout <<"Cantidad de Usuarios: " <<usr.size() <<endl;
-	list <usuarios>:: iterator i = usr.begin();
+	list <users>:: iterator i = usr.begin();
 	while (i!= usr.end())
 	{
+		users us;
 		//usuarios us este es el global
 		us =*i;
 		cout <<"\nRegistro: " << registro <<endl;;
@@ -176,9 +189,9 @@ int nueva_cx (int sock)
     return ns;
 }
 
-ser Recibir (int ns)
+ds Recibir (int ns)
 {
-	ser infoservicio;
+	ds infoservicio;
 	int nb, salida;
 	char msj[MAXLONG];
 	nb = recv(ns, msj, MAXLONG, 0);
@@ -201,7 +214,7 @@ ser Recibir (int ns)
 		cout <<"Mensaje del cliente [" <<ns <<"]: " <<msj <<endl;
 		char datos[MAXLONG];
 		string info, id;
-		datos = msj;
+		strcpy(datos,msj);
 		msj[0] = '\0';
 		char *palabra;
 		palabra = strtok (datos, ",");
@@ -223,7 +236,10 @@ void Enviarinicial (int ns, struct sockaddr_in cl)
 {
 	char *dire;
 	dire = inet_ntoa(cl.sin_addr);
-	send(ns, "\n30,....Bienvenido al Servidor ...\n", 38, 0);
+	string mb = "30,...Bienvenido al Servidor...\n";
+	char msjenv[MAXLONG];
+	strcpy(msjenv, mb.c_str());
+	send(ns, msjenv, mb.size(),0);
 	cout <<"Direccion entrante: "<<dire <<endl;
 }
 
@@ -231,6 +247,27 @@ void Enviar (int ns, string idservicio, string infoservicio)
 {
 	char msjenv[MAXLONG];
 	string mb = idservicio + "," + infoservicio;
-	strcpy(msjenv, mbc_str());
+	strcpy(msjenv, mb.c_str());
 	send(ns, msjenv, mb.size(), 0);
+}
+
+void Abrir()
+{
+	FILE *archivo;
+	char caracteres[100];
+	//list<usuarios> l_usuarios;
+	archivo = fopen("lista_usr.srv", "r");
+	if (archivo == NULL)
+	{
+		exit(1);
+	}
+	
+	cout<<"Extrayendo lista de usuarios..." <<endl;
+	while(feof(archivo) == 0)
+	{
+		fgets(caracteres, 100, archivo);
+		printf("%s",caracteres);
+	}
+	fclose(archivo);
+	cout <<endl;
 }

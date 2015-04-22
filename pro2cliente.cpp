@@ -19,6 +19,14 @@ using namespace std;
 #define MIPUERTO 9090
 #define MAXLONG 256
 
+struct servicios
+{
+	string idservicio;
+	string info;
+};
+
+servicios ser;
+
 int nosocket, numbytes;
 string mensaje;
 char msj[MAXLONG];
@@ -31,6 +39,10 @@ int iniciar();
 void conectar();
 string recibir(int);
 void enviar(int, string);
+void Enviar (int, string, string);
+ser Recibir (int);
+
+
 
 int main()
 {
@@ -46,9 +58,13 @@ int main()
 	{
 		cout <<"Digite el mensaje: ";
 		cin >> ms;
-		enviar(nosocket, ms);
-		recibir(nosocket);
+		//enviar(nosocket, ms);
+		Enviar (nosocket, "31.Servicio 1\n");
+		ser = Recibir(nosocket);
+		cout <<"ID: "<<ser.idservicio <<"Info: " <<ser.info <<endl;
+		//recibir(nosocket);
 	}while(ms != "fin");
+	enviar(nosocket, "2,fin.\n");
 	close(nosocket);
 }
 
@@ -91,6 +107,14 @@ void enviar (int sock, string cadena)
     send(sock, mensaje, cadena.size(), 0);
 }
 
+void Enviar (int ns, string idservicio, string infoservicio)
+{
+	char msjenv[MAXLONG];
+	string mb = idservicio + "," + infoservicio;
+	strcpy(msjenv, mbc_str());
+	send(ns, msjenv, mb.size(), 0);
+}
+
 string recibir (int sock)
 {
     char msj[MAXLONG];
@@ -110,4 +134,42 @@ string recibir (int sock)
         mensaje = (string)msj;
     }
     return mensaje;
+}
+
+ser Recibir (int ns)
+{
+	ser infoservicio;
+	int nb, salida;
+	char msj[MAXLONG];
+	nb = recv(ns, msj, MAXLONG, 0);
+	if(nb == -1)
+	{
+		cout <<"Error al recibir.\n";
+		infoservicio.idservicio = "10";
+		infoservicio.info = "Error al recibir";
+	}
+	if (nb == 0)
+	{
+		cout <<"Conexion finalizada\n";
+		close(ns);
+		infoservicio.idservicio = "4";
+		infoservicio.info = "Conexion finalizada sin problemas";
+	}
+	if (nb > 0)
+	{
+		msj[nb] = '\0';
+		cout <<"Mensaje del cliente [" <<ns <<"]: " <<msj <<endl;
+		char datos[MAXLONG];
+		string info, id;
+		strcpy(datos,msj);		
+		msj[0] = '\0';
+		char *palabra;
+		palabra = strtok (datos, ",");
+		id = (string)palabra;
+		palabra = strtok (NULL, ",");
+		info = (string)palabra;
+		infoservicio.idservicio = id;
+		infoservicio.info = info;		
+	}
+	return infoservicio;
 }
