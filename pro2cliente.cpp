@@ -16,18 +16,16 @@
 
 using namespace std;
 
-#define MIPUERTO 9090
+#define MIPUERTO 9093
 #define MAXLONG 256
 
-struct servicios
+typedef struct servicios
 {
 	string idservicio;
 	string info;
-};
+}ds;
 
-servicios ser;
-
-int nosocket, numbytes;
+int nosocket, numbytes, opcion;
 string mensaje;
 char msj[MAXLONG];
 char const host_servidor[]="192.168.8.79";
@@ -40,7 +38,9 @@ void conectar();
 string recibir(int);
 void enviar(int, string);
 void Enviar (int, string, string);
-ser Recibir (int);
+ds Recibir (int);
+void Servicio1(int);
+void mostrar_menu();
 
 
 
@@ -56,17 +56,51 @@ int main()
 	string ms;
 	do
 	{
-		cout <<"Digite el mensaje: ";
-		cin >> ms;
-		//enviar(nosocket, ms);
-		Enviar (nosocket, "31.Servicio 1\n");
-		ser = Recibir(nosocket);
-		cout <<"ID: "<<ser.idservicio <<"Info: " <<ser.info <<endl;
-		//recibir(nosocket);
+		mostrar_menu();
+		switch (opcion)
+		{
+			case 1:
+				break;
+			case 2:
+				{
+					Servicio1(nosocket);
+				}
+				break;
+			case 3:
+				break;
+			case 0:
+				break;
+			default:
+				cout <<"Opcion incorrecta... Imbecil\n";
+				break;
+		}
+
 	}while(ms != "fin");
 	enviar(nosocket, "2,fin.\n");
 	close(nosocket);
 }
+
+void Servicio1(int ns)
+{
+	enviar (nosocket, "31,Servicio 1\n");
+	ds informacion;
+	informacion = Recibir(nosocket);
+	cout <<"ID: "<<informacion.idservicio <<"Info: " <<informacion.info <<endl;
+}
+
+// MENUS
+void mostrar_menu()
+{
+	cout <<"\n...Menu Principal...\n";
+	cout <<"1. Registrarse\n";
+	cout <<"2. Listar Jugadores\n";
+	cout <<"3. Jugar\n";
+	cout <<"0. Salir...\n";
+	cout <<"Digite una opcion: ";
+	cin >> opcion;
+}
+
+
 
 int iniciar()
 {
@@ -94,10 +128,20 @@ int iniciar()
 void conectar()
 {
 	if (connect(nosocket, (struct sockaddr *)&servidor, sizeof(struct sockaddr)) == -1)
+	
 	{
 		cout <<"Error en conexion 2" <<endl;
 		exit(-1);
 	}
+}
+
+string enviarInfo (int s, string campo){
+   char msjenv[MAXLONG];  
+   cout<<"Enviar "<< campo <<":" ;
+   cin.getline(msjenv,MAXLONG,'\n');
+   mensaje=(string) msjenv;
+   send(s,msjenv,mensaje.size(),0);
+   return mensaje;
 }
 
 void enviar (int sock, string cadena)
@@ -111,7 +155,7 @@ void Enviar (int ns, string idservicio, string infoservicio)
 {
 	char msjenv[MAXLONG];
 	string mb = idservicio + "," + infoservicio;
-	strcpy(msjenv, mbc_str());
+	strcpy(msjenv, mb.c_str());
 	send(ns, msjenv, mb.size(), 0);
 }
 
@@ -136,9 +180,34 @@ string recibir (int sock)
     return mensaje;
 }
 
-ser Recibir (int ns)
+string recibir (int s, int vc)
 {
-	ser infoservicio;
+	int nb;
+  	string msjnuevo="vacio";
+	char msjrec[MAXLONG];
+	nb = recv(s,msjrec,MAXLONG,0);
+	if (nb == -1)
+	{
+	cout<<"Error al recibir. "<< endl;
+	exit(-1);
+	}
+	if (nb==0)
+	{
+	cout<<"Conexion finalizada"<<endl;
+	close(s);
+	}
+	if(nb>0)
+	{
+	msjrec[nb]='\0';
+	//cout<<"Mensaje: "<<msjrec<<endl;
+	msjnuevo=(string)msjrec;
+	}
+	return msjnuevo;
+}
+
+ds Recibir (int ns)
+{
+	ds infoservicio;
 	int nb, salida;
 	char msj[MAXLONG];
 	nb = recv(ns, msj, MAXLONG, 0);

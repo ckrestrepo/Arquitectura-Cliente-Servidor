@@ -16,10 +16,13 @@
 
 using namespace std;
 
-#define MIPUERTO 9090   //pto de conexion para usuarios
+#define MIPUERTO 9093   //pto de conexion para usuarios
 #define MIIP "192.168.8.79"
 #define ENCOLA 10       //numero conexiones permitidas
 #define MAXLONG 256
+#define LISTADO "lista.usr.srv"
+//#define archivo "ejemplo.txt"
+
 
 //Estructuras
 typedef struct usuarios
@@ -48,6 +51,8 @@ int nueva_cx (int);
 void mostrar(list<usuarios>);
 void Abrir();
 void Servicio1(int);
+void Guardar(users);
+string inttostring(int);
 
 struct sockaddr_in dirservidor;
 struct sockaddr_in cliente;
@@ -100,6 +105,7 @@ int main()
 			us.ip = (string)dire;
 			us.idint = nuevo;
 			l_us.push_back(us);
+			Guardar(us);
 			mostrar(l_us);
 		}
 	}while (fin == 1);
@@ -114,25 +120,7 @@ void Servicio1(int ns)
 	Enviar(ns, "30","Extrayendo...");
 	//Abrir();
 }
-/*
-void servicio1(int ns)
-{
-	//Solicitar lista al padre mediante tuberia
-	sitrng info, mensaje;
-	list<usuarios>::iterator i;
-	for (i = ns.begin(); i != ns.end(); i++)
-	{
-		us = *i;
-		mensaje = aCad(us.idint) + ":" + us.user;
-		Enviar(ns, "30", mensaje);
-		ser = Recibir(ns);
-		cout <<ser.info<<endl;
-	}
-	Enviar(ns, "3", "fin");
-	ser = Recibir(ns);
-	cout <<ser.info <<endl;
-}
-*/
+
 void mostrar(list<users> usr)
 {
 	int registro = 1;
@@ -254,9 +242,9 @@ void Enviar (int ns, string idservicio, string infoservicio)
 void Abrir()
 {
 	FILE *archivo;
-	char caracteres[100];
+	char caracteres[MAXLONG];
 	//list<usuarios> l_usuarios;
-	archivo = fopen("lista_usr.srv", "r");
+	archivo = fopen(LISTADO, "r");
 	if (archivo == NULL)
 	{
 		exit(1);
@@ -265,9 +253,29 @@ void Abrir()
 	cout<<"Extrayendo lista de usuarios..." <<endl;
 	while(feof(archivo) == 0)
 	{
-		fgets(caracteres, 100, archivo);
+		fgets(caracteres, MAXLONG, archivo);
 		printf("%s",caracteres);
 	}
 	fclose(archivo);
 	cout <<endl;
+}
+
+void Guardar(users u)
+{
+	FILE *fp;
+	fp = fopen(LISTADO, "a");
+	char registro[MAXLONG];
+	string sreg = u.user + ", " + u.ip + ", " + inttostring(u.idint) + "\n";
+	strcpy(registro, sreg.c_str());
+	fputs(registro, fp);
+	fclose(fp);
+
+}
+
+string inttostring(int x)
+{
+    stringstream ss;
+    ss<<x;
+    string cadena = ss.str();
+    return cadena;
 }
