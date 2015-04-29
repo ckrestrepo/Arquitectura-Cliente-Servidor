@@ -60,13 +60,29 @@ int main()
 		switch (opcion)
 		{
 			case 1:
+			{
+				enviar (nosocket, "31,Servicio 1\n");
+				ds info = Recibir(nosocket);
+				cout <<"ID: "<<info.idservicio <<endl <<"Info: " <<info.info <<endl;
+				//Recibir informacion
+				Servicio1(nosocket);
+			}
 				break;
 			case 2:
-				{
-					Servicio1(nosocket);
-				}
+			{
+				enviar (nosocket, "32,Servicio 2\n");
+				ds info = Recibir(nosocket);
+				cout <<"ID: "<<info.idservicio <<endl <<"Info: " <<info.info <<endl;
+				Servicio1(nosocket);
+			}
 				break;
 			case 3:
+			{
+				enviar (nosocket, "33,Servicio 3\n");
+				ds info = Recibir(nosocket);
+				cout <<"ID: "<<info.idservicio <<endl <<"Info: " <<info.info <<endl;
+				Servicio1(nosocket);
+			}
 				break;
 			case 0:
 				break;
@@ -75,25 +91,32 @@ int main()
 				break;
 		}
 
-	}while(ms != "fin");
+	}while(opcion != 0);
 	enviar(nosocket, "2,fin.\n");
 	close(nosocket);
 }
 
 void Servicio1(int ns)
 {
-	enviar (nosocket, "31,Servicio 1\n");
+	cout <<"Iniciando el Servicio 1...\n";
 	ds informacion;
 	informacion = Recibir(nosocket);
-	cout <<"ID: "<<informacion.idservicio <<"Info: " <<informacion.info <<endl;
+	cout <<"ID: "<<informacion.idservicio <<endl <<"Info: " <<informacion.info <<endl;
+	enviar (nosocket, "1, Recibido\n");
+	do
+	{
+		informacion = Recibir(ns);
+		cout <<"ID: "<<informacion.idservicio <<endl <<"Info: " <<informacion.info <<endl;
+		Enviar(ns, "1", "Recibido");
+	}while (informacion.idservicio != "3");
 }
 
 // MENUS
 void mostrar_menu()
 {
 	cout <<"\n...Menu Principal...\n";
-	cout <<"1. Registrarse\n";
-	cout <<"2. Listar Jugadores\n";
+	cout <<"1. Listar Jugadores\n";
+	cout <<"2. Registrarse\n";
 	cout <<"3. Jugar\n";
 	cout <<"0. Salir...\n";
 	cout <<"Digite una opcion: ";

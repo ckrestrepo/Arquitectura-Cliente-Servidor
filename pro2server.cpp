@@ -49,8 +49,10 @@ void Enviarinicial (int, struct sockaddr_in);
 void Enviar (int, string, string);
 int nueva_cx (int);
 void mostrar(list<usuarios>);
-void Abrir();
+list<string> Abrir();
 void Servicio1(int);
+void Servicio2(int);
+void Servicio3(int);
 void Guardar(users);
 string inttostring(int);
 
@@ -85,11 +87,20 @@ int main()
 			do
 			{
 				iserv = Recibir(nuevo);
+				Enviar(nuevo, "1", "Opcion recibida");
 				//31: "Servicio 1"
-				cout <<"ID: "<<iserv.idservicio <<"Info: " <<iserv.info <<endl;
+				cout <<"Opcion ID: "<<iserv.idservicio <<endl <<"Info: " <<iserv.info <<endl;
 				if(iserv.idservicio == "31")
 				{
 					Servicio1(nuevo);
+				}
+				if(iserv.idservicio == "32")
+				{
+					Servicio2(nuevo);
+				}
+				if(iserv.idservicio == "33")
+				{
+					Servicio3(nuevo);
 				}
 			}while (iserv.idservicio != "2");
 			exit (33);
@@ -115,9 +126,43 @@ int main()
 void Servicio1(int ns)
 {
 	//Solicitar lista al padre mediante tuberias nombrada
-	string info;
+	//string info;
+	ds iserv;
 	//Inicia con enviar
 	Enviar(ns, "30","Extrayendo...");
+	iserv = Recibir(ns);
+	cout <<"ID: "<<iserv.idservicio <<endl <<"Info: " <<iserv.info <<endl;
+	list<string> l;
+	l = Abrir();
+
+	list<string>:: iterator i;
+	for (i = l.begin(); i != l.end(); i++)
+	{
+		string usr;
+		usr = *i;
+		Enviar(ns, "1", usr);
+		iserv = Recibir(ns);
+	}
+	Enviar(ns, "3", "Fin del proceso...\n");
+	iserv = Recibir(ns);
+
+}
+
+void Servicio2(int ns)
+{
+	//Solicitar lista al padre mediante tuberias nombrada
+	string info;
+	//Inicia con enviar
+	Enviar(ns, "30","Servicio2 Recibido...");
+	//Abrir();
+}
+
+void Servicio3(int ns)
+{
+	//Solicitar lista al padre mediante tuberias nombrada
+	string info;
+	//Inicia con enviar
+	Enviar(ns, "30","Servicio3 Recibido...");
 	//Abrir();
 }
 
@@ -239,11 +284,12 @@ void Enviar (int ns, string idservicio, string infoservicio)
 	send(ns, msjenv, mb.size(), 0);
 }
 
-void Abrir()
+list<string> Abrir()
 {
 	FILE *archivo;
 	char caracteres[MAXLONG];
-	//list<usuarios> l_usuarios;
+	list<string> l_usuarios;
+
 	archivo = fopen(LISTADO, "r");
 	if (archivo == NULL)
 	{
@@ -254,10 +300,14 @@ void Abrir()
 	while(feof(archivo) == 0)
 	{
 		fgets(caracteres, MAXLONG, archivo);
-		printf("%s",caracteres);
+		string info = (string)caracteres;
+		//printf("%s",caracteres);
+		cout <<info <<endl;
+		l_usuarios.push_back(info);
 	}
 	fclose(archivo);
 	cout <<endl;
+	return l_usuarios;
 }
 
 void Guardar(users u)
@@ -265,7 +315,7 @@ void Guardar(users u)
 	FILE *fp;
 	fp = fopen(LISTADO, "a");
 	char registro[MAXLONG];
-	string sreg = u.user + ", " + u.ip + ", " + inttostring(u.idint) + "\n";
+	string sreg = u.user + "," + u.ip + "," + inttostring(u.idint) + "\n";
 	strcpy(registro, sreg.c_str());
 	fputs(registro, fp);
 	fclose(fp);
