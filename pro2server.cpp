@@ -49,12 +49,14 @@ void Enviarinicial (int, struct sockaddr_in);
 void Enviar (int, string, string);
 int nueva_cx (int);
 void mostrar(list<usuarios>);
+void Buscar(list<string>);
 list<string> Abrir();
 void Servicio1(int);
 void Servicio2(int);
 void Servicio3(int);
 void Guardar(users);
 string inttostring(int);
+users stringtoUsers(string);
 
 struct sockaddr_in dirservidor;
 struct sockaddr_in cliente;
@@ -92,14 +94,17 @@ int main()
 				cout <<"Opcion ID: "<<iserv.idservicio <<endl <<"Info: " <<iserv.info <<endl;
 				if(iserv.idservicio == "31")
 				{
+					// Lista de usuarios
 					Servicio1(nuevo);
 				}
 				if(iserv.idservicio == "32")
 				{
+					// Registrar usuario
 					Servicio2(nuevo);
 				}
 				if(iserv.idservicio == "33")
 				{
+					// Jugar
 					Servicio3(nuevo);
 				}
 			}while (iserv.idservicio != "2");
@@ -150,21 +155,45 @@ void Servicio1(int ns)
 
 void Servicio2(int ns)
 {
-	//Solicitar lista al padre mediante tuberias nombrada
-	string info;
-	//Inicia con enviar
-	Enviar(ns, "30","Servicio2 Recibido...");
-	//Abrir();
+	// Registro de usuarios
+	ds iserv = Recibir(ns);
+	cout <<"ID: "<<iserv.idservicio <<endl <<"Info: " <<iserv.info <<endl;
+	Enviar(nuevo, "1", "Opcion recibida");
+
+	// 1. Extraer informacion del archivo a una lista
+	list<string> l_usuarios;
+	l_usuarios = Abrir();
+	// 2. Buscar coincidencia de id socket en la lista
+	Buscar(l_usuarios);
+	// 3. Verificar nombre (que no se repita)
+
+	// 4. Si no se repite, cambiar valor en la lista
+
+	// 5.
+
 }
 
 void Servicio3(int ns)
 {
-	//Solicitar lista al padre mediante tuberias nombrada
 	string info;
-	//Inicia con enviar
 	Enviar(ns, "30","Servicio3 Recibido...");
-	//Abrir();
 }
+
+void Buscar(list<string> l)
+{
+	list <string>:: iterator i;
+	for (i = l.begin(); i!= l.end(); i++)
+	{
+		string cadena;
+		cadena = *i;
+		users infousr = stringtoUsers(cadena);
+		cout <<"Valores...\n";
+		cout <<"Usuario: "<<infousr.user <<endl;
+		cout <<"ID interno: " <<infousr.idint <<endl;
+	}
+}
+
+
 
 void mostrar(list<users> usr)
 {
@@ -328,4 +357,29 @@ string inttostring(int x)
     ss<<x;
     string cadena = ss.str();
     return cadena;
+}
+
+users stringtoUsers(string cad)
+{
+	/*
+	string user;
+	string ip;
+	int idint;
+	*/
+	users infousr;
+	char datos[MAXLONG];
+	strcpy(datos, cad.c_str());
+	string user, ip, idint;
+	char *ptr = strtok(datos,",");
+	user = (string)ptr;
+	ptr = strtok (NULL, ",");
+	ip = (string)ptr;
+	ptr = strtok (NULL, ",");
+	idint = (string)ptr;
+	infousr.user = user;
+	infousr.ip = ip;
+	infousr.idint = stringtoUsers(idint);
+
+	return infousr;
+
 }
