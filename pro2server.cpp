@@ -17,7 +17,7 @@
 using namespace std;
 
 #define MIPUERTO 9093   //pto de conexion para usuarios
-#define MIIP "192.168.8.79"
+#define MIIP "127.0.0.1"
 #define ENCOLA 10       //numero conexiones permitidas
 #define MAXLONG 256
 #define LISTADO "lista.usr.srv"
@@ -48,14 +48,15 @@ void Responder (int);
 void Enviarinicial (int, struct sockaddr_in);
 void Enviar (int, string, string);
 int nueva_cx (int);
-void mostrar(list<usuarios>);
-void Buscar(list<string>);
+void mostrar(list<users>);
+void Buscar(list<string>, int, string);
 list<string> Abrir();
 void Servicio1(int);
 void Servicio2(int);
 void Servicio3(int);
 void Guardar(users);
 string inttostring(int);
+int stringtoint(string);
 users stringtoUsers(string);
 
 struct sockaddr_in dirservidor;
@@ -91,7 +92,8 @@ int main()
 				iserv = Recibir(nuevo);
 				Enviar(nuevo, "1", "Opcion recibida");
 				//31: "Servicio 1"
-				cout <<"Opcion ID: "<<iserv.idservicio <<endl <<"Info: " <<iserv.info <<endl;
+				cout <<"Opcion ID: "<<iserv.idservicio <<endl;
+				cout <<"Info: " <<iserv.info <<endl;
 				if(iserv.idservicio == "31")
 				{
 					// Lista de usuarios
@@ -121,6 +123,7 @@ int main()
 			us.ip = (string)dire;
 			us.idint = nuevo;
 			l_us.push_back(us);
+			//Almacenamos la informacion del usuario en Archivo
 			Guardar(us);
 			mostrar(l_us);
 		}
@@ -131,12 +134,12 @@ int main()
 void Servicio1(int ns)
 {
 	//Solicitar lista al padre mediante tuberias nombrada
-	//string info;
 	ds iserv;
 	//Inicia con enviar
 	Enviar(ns, "30","Extrayendo...");
 	iserv = Recibir(ns);
-	cout <<"ID: "<<iserv.idservicio <<endl <<"Info: " <<iserv.info <<endl;
+	cout <<"ID: "<<iserv.idservicio <<endl;
+	cout <<"Info: " <<iserv.info <<endl;
 	list<string> l;
 	l = Abrir();
 
@@ -156,15 +159,18 @@ void Servicio1(int ns)
 void Servicio2(int ns)
 {
 	// Registro de usuarios
-	ds iserv = Recibir(ns);
-	cout <<"ID: "<<iserv.idservicio <<endl <<"Info: " <<iserv.info <<endl;
+	ds iserv;
+	iserv = Recibir(ns);
 	Enviar(nuevo, "1", "Opcion recibida");
+	cout <<"ID: "<<iserv.idservicio <<endl; 
+	cout <<"Info: " <<iserv.info <<endl;
+	string nombre = iserv.info;
 
 	// 1. Extraer informacion del archivo a una lista
 	list<string> l_usuarios;
 	l_usuarios = Abrir();
 	// 2. Buscar coincidencia de id socket en la lista
-	Buscar(l_usuarios);
+	Buscar(l_usuarios, ns, nombre);
 	// 3. Verificar nombre (que no se repita)
 
 	// 4. Si no se repite, cambiar valor en la lista
@@ -179,17 +185,39 @@ void Servicio3(int ns)
 	Enviar(ns, "30","Servicio3 Recibido...");
 }
 
-void Buscar(list<string> l)
+void Buscar(list<string> l, int idser, string nombre)
 {
 	list <string>:: iterator i;
+	bool repetido = false;
+	// Aca miramos si se repite el nombre
 	for (i = l.begin(); i!= l.end(); i++)
 	{
 		string cadena;
 		cadena = *i;
 		users infousr = stringtoUsers(cadena);
+		if (nombre == infousr.user)
+		{
+			repetido = true;
+		}
 		cout <<"Valores...\n";
 		cout <<"Usuario: "<<infousr.user <<endl;
 		cout <<"ID interno: " <<infousr.idint <<endl;
+	}
+	list<users> nuevalista;
+	if(!repetido)
+	{
+		list<string>::iterator i2;
+		for (i2 = l.begin(); i2!= l.end(); i2++)
+		{
+			string cadena;
+			cadena = *i;
+			users infousr = stringtoUsers(cadena);
+			if(idser == infousr.idint)
+			{
+				infousr.user = nombre;
+			}
+			nuevalista.push_back(infousr);
+		}
 	}
 }
 
@@ -224,7 +252,7 @@ int inicializar ()
     }
     dirservidor.sin_family = AF_INET;
     dirservidor.sin_port = htons(MIPUERTO);
-    dirservidor.sin_addr.s_addr = inet_addr("192.168.8.79");
+    dirservidor.sin_addr.s_addr = inet_addr("127.0.0.1");
     bzero(&(dirservidor.sin_zero),8);
     if (bind(nosocket, (struct sockaddr*)&dirservidor, sizeof(struct sockaddr))==-1)
     {
@@ -348,7 +376,13 @@ void Guardar(users u)
 	strcpy(registro, sreg.c_str());
 	fputs(registro, fp);
 	fclose(fp);
+	cout <<"Guardado con Exito...\n";
+}
 
+int stringtoint(string x)
+{
+    int valor = atoi(x.c_str());
+    return valor;
 }
 
 string inttostring(int x)
@@ -378,8 +412,6 @@ users stringtoUsers(string cad)
 	idint = (string)ptr;
 	infousr.user = user;
 	infousr.ip = ip;
-	infousr.idint = stringtoUsers(idint);
-
+	infousr.idint = stringtoint(idint);
 	return infousr;
-
 }

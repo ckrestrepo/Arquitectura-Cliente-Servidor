@@ -28,7 +28,7 @@ typedef struct servicios
 int nosocket, numbytes, opcion;
 string mensaje;
 char msj[MAXLONG];
-char const host_servidor[]="192.168.8.79";
+char const host_servidor[]="127.0.0.1";
 struct hostent *host_entrante;
 struct sockaddr_in servidor;
 
@@ -38,8 +38,13 @@ void conectar();
 string recibir(int);
 void enviar(int, string);
 void Enviar (int, string, string);
+string enviarInfo (int, string);
 ds Recibir (int);
+string recibir (int, int);
+string recibir (int);
 void Servicio1(int);
+void Servicio2(int);
+void Servicio3(int);
 void mostrar_menu();
 
 
@@ -63,7 +68,8 @@ int main()
 			{
 				enviar (nosocket, "31,Servicio 1\n");
 				ds info = Recibir(nosocket);
-				cout <<"ID: "<<info.idservicio <<endl <<"Info: " <<info.info <<endl;
+				cout <<"ID: "<<info.idservicio <<endl;
+				cout <<"Info: " <<info.info <<endl;
 				//Recibir informacion
 				Servicio1(nosocket);
 			}
@@ -72,7 +78,8 @@ int main()
 			{
 				enviar (nosocket, "32,Servicio 2\n");
 				ds info = Recibir(nosocket);
-				cout <<"ID: "<<info.idservicio <<endl <<"Info: " <<info.info <<endl;
+				cout <<"ID: "<<info.idservicio <<endl;
+				cout <<"Info: " <<info.info <<endl;
 				Servicio1(nosocket);
 			}
 				break;
@@ -80,7 +87,8 @@ int main()
 			{
 				enviar (nosocket, "33,Servicio 3\n");
 				ds info = Recibir(nosocket);
-				cout <<"ID: "<<info.idservicio <<endl <<"Info: " <<info.info <<endl;
+				cout <<"ID: "<<info.idservicio <<endl;
+				cout <<"Info: " <<info.info <<endl;
 				Servicio1(nosocket);
 			}
 				break;
@@ -93,22 +101,27 @@ int main()
 
 	}while(opcion != 0);
 	enviar(nosocket, "2,fin.\n");
+	ds info = Recibir(nosocket);
+	cout <<"ID: "<<info.idservicio <<endl;
+	cout <<"Info: " <<info.info <<endl;
 	close(nosocket);
 }
 
 void Servicio1(int ns)
 {
 	cout <<"Iniciando el Servicio 1...\n";
-	ds informacion;
-	informacion = Recibir(nosocket);
-	cout <<"ID: "<<informacion.idservicio <<endl <<"Info: " <<informacion.info <<endl;
-	enviar (nosocket, "1, Recibido\n");
+	ds info;
+	info = Recibir(nosocket);
+	cout <<"ID: "<<info.idservicio <<endl;
+	cout <<"Info: " <<info.info <<endl;
+	enviar (ns, "1, Recibido\n");
 	do
 	{
-		informacion = Recibir(ns);
-		cout <<"ID: "<<informacion.idservicio <<endl <<"Info: " <<informacion.info <<endl;
+		info = Recibir(ns);
+		cout <<"ID: "<<info.idservicio <<endl;
+		cout <<"Info: " <<info.info <<endl;
 		Enviar(ns, "1", "Recibido");
-	}while (informacion.idservicio != "3");
+	}while (info.idservicio != "3");
 }
 
 // MENUS
@@ -250,7 +263,7 @@ ds Recibir (int ns)
 	if (nb > 0)
 	{
 		msj[nb] = '\0';
-		cout <<"Mensaje del cliente [" <<ns <<"]: " <<msj <<endl;
+		//cout <<"Mensaje del cliente [" <<ns <<"]: " <<msj <<endl;
 		char datos[MAXLONG];
 		string info, id;
 		strcpy(datos,msj);		
