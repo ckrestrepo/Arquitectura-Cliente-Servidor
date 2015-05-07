@@ -54,7 +54,7 @@ list<string> Abrir();
 void Servicio1(int);
 void Servicio2(int);
 void Servicio3(int);
-void Guardar(users);
+void Guardar(users, int);
 string inttostring(int);
 int stringtoint(string);
 users stringtoUsers(string);
@@ -124,7 +124,7 @@ int main()
 			us.idint = nuevo;
 			l_us.push_back(us);
 			//Almacenamos la informacion del usuario en Archivo
-			Guardar(us);
+			Guardar(us,0);
 			mostrar(l_us);
 		}
 	}while (fin == 1);
@@ -165,18 +165,14 @@ void Servicio2(int ns)
 	cout <<"ID: "<<iserv.idservicio <<endl; 
 	cout <<"Info: " <<iserv.info <<endl;
 	string nombre = iserv.info;
-
 	// 1. Extraer informacion del archivo a una lista
 	list<string> l_usuarios;
 	l_usuarios = Abrir();
 	// 2. Buscar coincidencia de id socket en la lista
-	Buscar(l_usuarios, ns, nombre);
 	// 3. Verificar nombre (que no se repita)
-
 	// 4. Si no se repite, cambiar valor en la lista
-
-	// 5.
-
+	// 5. Reemplazar datos del archivo por informacion en la lista
+	Buscar(l_usuarios, ns, nombre);
 }
 
 void Servicio3(int ns)
@@ -210,13 +206,30 @@ void Buscar(list<string> l, int idser, string nombre)
 		for (i2 = l.begin(); i2!= l.end(); i2++)
 		{
 			string cadena;
-			cadena = *i;
+			cadena = *i2;
 			users infousr = stringtoUsers(cadena);
 			if(idser == infousr.idint)
 			{
 				infousr.user = nombre;
 			}
 			nuevalista.push_back(infousr);
+		}
+		//reescribir archivo lista.usr.srv
+		list<users>::iterator i_users;
+		bool primero = true;
+		for (i_users = nuevalista.begin(); i_users!= nuevalista.end(); i_users++)
+		{
+			users aux;
+			aux = *i_users;
+			if (primero)
+			{
+				Guardar(aux,0);
+				primero = false;
+			}
+			else
+			{
+				Guardar(aux,1);
+			}
 		}
 	}
 }
@@ -367,10 +380,19 @@ list<string> Abrir()
 	return l_usuarios;
 }
 
-void Guardar(users u)
+// Tipo 1: Adicion, Tipo 0: Nuevo
+void Guardar(users u, int tipo)
 {
 	FILE *fp;
-	fp = fopen(LISTADO, "a");
+	if (tipo == 1)
+	{
+		fp = fopen(LISTADO, "a");
+	}
+	else
+	{
+		fp = fopen(LISTADO, "w");	
+	}
+	
 	char registro[MAXLONG];
 	string sreg = u.user + "," + u.ip + "," + inttostring(u.idint) + "\n";
 	strcpy(registro, sreg.c_str());

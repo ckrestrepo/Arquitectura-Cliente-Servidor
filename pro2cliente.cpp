@@ -107,23 +107,6 @@ int main()
 	close(nosocket);
 }
 
-void Servicio1(int ns)
-{
-	cout <<"Iniciando el Servicio 1...\n";
-	ds info;
-	info = Recibir(nosocket);
-	cout <<"ID: "<<info.idservicio <<endl;
-	cout <<"Info: " <<info.info <<endl;
-	enviar (ns, "1, Recibido\n");
-	do
-	{
-		info = Recibir(ns);
-		cout <<"ID: "<<info.idservicio <<endl;
-		cout <<"Info: " <<info.info <<endl;
-		Enviar(ns, "1", "Recibido");
-	}while (info.idservicio != "3");
-}
-
 // MENUS
 void mostrar_menu()
 {
@@ -136,6 +119,31 @@ void mostrar_menu()
 	cin >> opcion;
 }
 
+void Servicio1(int ns)
+{
+	cout <<"Iniciando el Servicio 1...\n";
+	ds info;
+	info = Recibir(nosocket);
+	cout <<"ID: "<<info.idservicio <<endl;
+	cout <<"Info: " <<info.info <<endl;
+	Enviar (ns, "1", "Recibido\n");
+	do
+	{
+		info = Recibir(ns);
+		cout <<"ID: "<<info.idservicio <<endl;
+		cout <<"Info: " <<info.info <<endl;
+		Enviar(ns, "1", "Recibido");
+	}while (info.idservicio != "3");
+}
+
+void Servicio2(int ns)
+{
+	cout <<"Iniciando el Servicio 2...\n";
+	string nombre;
+	cout <<"Digite el Nombre: ";
+	cin >> nombre;
+	Enviar (ns, "30", nombre);
+}
 
 
 int iniciar()
