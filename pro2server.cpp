@@ -71,6 +71,7 @@ int main()
 	inicializar();
     cout <<"\n...Servidor Iniciado...\n";
 	int fin = 1;
+	bool primero = true;
 	do
 	{
 		nuevo = nueva_cx(nosocket);
@@ -124,7 +125,16 @@ int main()
 			us.idint = nuevo;
 			l_us.push_back(us);
 			//Almacenamos la informacion del usuario en Archivo
-			Guardar(us,0);
+			cout <<"Guardando...\n";
+			if (primero)
+			{
+				Guardar(us, 0);
+				primero = false;
+			}
+			else
+			{
+				Guardar(us, 1);
+			}
 			mostrar(l_us);
 		}
 	}while (fin == 1);
@@ -255,6 +265,97 @@ void mostrar(list<users> usr)
 	}	
 }
 
+
+list<string> Abrir()
+{
+	FILE *archivo;
+	char caracteres[MAXLONG];
+	list<string> l_usuarios;
+
+	archivo = fopen(LISTADO, "r");
+	if (archivo == NULL)
+	{
+		exit(1);
+	}
+	
+	cout<<"Extrayendo lista de usuarios..." <<endl;
+	while(feof(archivo) == 0)
+	{
+		fgets(caracteres, MAXLONG, archivo);
+		string info = (string)caracteres;
+		cout <<info <<endl;
+		l_usuarios.push_back(info);
+	}
+	fclose(archivo);
+	cout <<endl;
+	return l_usuarios;
+}
+
+// Tipo 1: Adicion, Tipo 0: Nuevo
+void Guardar(users u, int tipo)
+{
+	FILE *fp;
+	if (tipo == 1)
+	{
+		fp = fopen(LISTADO, "a");
+	}
+	else
+	{
+		fp = fopen(LISTADO, "w");	
+	}
+	
+	char registro[MAXLONG];
+	string sreg = u.user + "," + u.ip + "," + inttostring(u.idint) + "\n";
+	strcpy(registro, sreg.c_str());
+	fputs(registro, fp);
+	fclose(fp);
+	cout <<"Guardado con Exito...\n";
+}
+
+int stringtoint(string x)
+{
+    int valor = atoi(x.c_str());
+    return valor;
+}
+
+string inttostring(int x)
+{
+    stringstream ss;
+    ss<<x;
+    string cadena = ss.str();
+    return cadena;
+}
+
+users stringtoUsers(string cad)
+{
+	/*
+	string user;
+	string ip;
+	int idint;
+	*/
+	users infousr;
+	char datos[MAXLONG];
+	strcpy(datos, cad.c_str());
+	string user, ip, idint;
+	char *ptr = strtok(datos,",");
+	user = (string)ptr;
+	ptr = strtok (NULL, ",");
+	ip = (string)ptr;
+	ptr = strtok (NULL, ",");
+	idint = (string)ptr;
+	infousr.user = user;
+	infousr.ip = ip;
+	infousr.idint = stringtoint(idint);
+	return infousr;
+}
+
+
+
+/****************************************************/
+/*               SECCION DE CONEXION                */
+/****************************************************/
+
+
 int inicializar ()
 {
     nosocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -352,88 +453,4 @@ void Enviar (int ns, string idservicio, string infoservicio)
 	string mb = idservicio + "," + infoservicio;
 	strcpy(msjenv, mb.c_str());
 	send(ns, msjenv, mb.size(), 0);
-}
-
-list<string> Abrir()
-{
-	FILE *archivo;
-	char caracteres[MAXLONG];
-	list<string> l_usuarios;
-
-	archivo = fopen(LISTADO, "r");
-	if (archivo == NULL)
-	{
-		exit(1);
-	}
-	
-	cout<<"Extrayendo lista de usuarios..." <<endl;
-	while(feof(archivo) == 0)
-	{
-		fgets(caracteres, MAXLONG, archivo);
-		string info = (string)caracteres;
-		//printf("%s",caracteres);
-		cout <<info <<endl;
-		l_usuarios.push_back(info);
-	}
-	fclose(archivo);
-	cout <<endl;
-	return l_usuarios;
-}
-
-// Tipo 1: Adicion, Tipo 0: Nuevo
-void Guardar(users u, int tipo)
-{
-	FILE *fp;
-	if (tipo == 1)
-	{
-		fp = fopen(LISTADO, "a");
-	}
-	else
-	{
-		fp = fopen(LISTADO, "w");	
-	}
-	
-	char registro[MAXLONG];
-	string sreg = u.user + "," + u.ip + "," + inttostring(u.idint) + "\n";
-	strcpy(registro, sreg.c_str());
-	fputs(registro, fp);
-	fclose(fp);
-	cout <<"Guardado con Exito...\n";
-}
-
-int stringtoint(string x)
-{
-    int valor = atoi(x.c_str());
-    return valor;
-}
-
-string inttostring(int x)
-{
-    stringstream ss;
-    ss<<x;
-    string cadena = ss.str();
-    return cadena;
-}
-
-users stringtoUsers(string cad)
-{
-	/*
-	string user;
-	string ip;
-	int idint;
-	*/
-	users infousr;
-	char datos[MAXLONG];
-	strcpy(datos, cad.c_str());
-	string user, ip, idint;
-	char *ptr = strtok(datos,",");
-	user = (string)ptr;
-	ptr = strtok (NULL, ",");
-	ip = (string)ptr;
-	ptr = strtok (NULL, ",");
-	idint = (string)ptr;
-	infousr.user = user;
-	infousr.ip = ip;
-	infousr.idint = stringtoint(idint);
-	return infousr;
 }

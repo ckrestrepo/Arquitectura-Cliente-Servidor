@@ -80,7 +80,7 @@ int main()
 				ds info = Recibir(nosocket);
 				cout <<"ID: "<<info.idservicio <<endl;
 				cout <<"Info: " <<info.info <<endl;
-				Servicio1(nosocket);
+				Servicio2(nosocket);
 			}
 				break;
 			case 3:
@@ -89,7 +89,7 @@ int main()
 				ds info = Recibir(nosocket);
 				cout <<"ID: "<<info.idservicio <<endl;
 				cout <<"Info: " <<info.info <<endl;
-				Servicio1(nosocket);
+				Servicio2(nosocket);
 			}
 				break;
 			case 0:
@@ -129,6 +129,7 @@ void Servicio1(int ns)
 	Enviar (ns, "1", "Recibido\n");
 	do
 	{
+		
 		info = Recibir(ns);
 		cout <<"ID: "<<info.idservicio <<endl;
 		cout <<"Info: " <<info.info <<endl;
@@ -143,6 +144,8 @@ void Servicio2(int ns)
 	cout <<"Digite el Nombre: ";
 	cin >> nombre;
 	Enviar (ns, "30", nombre);
+	ds info = Recibir(ns);
+	cout <<"Mensaje del Servidor: " <<info.info <<endl;
 }
 
 
