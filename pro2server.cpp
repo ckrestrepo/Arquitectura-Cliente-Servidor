@@ -51,8 +51,10 @@ void Enviar (int, string, string);
 int nueva_cx (int);
 void mostrar(list<users>);
 
-bool BuscarRepetido(list<string>, int);
 void Buscar(list<string>, int, string);
+bool AgregarDato(list<string>, int);
+
+
 list<string> Abrir();
 void Servicio1(int);
 void Servicio2(int);
@@ -134,22 +136,21 @@ int main()
 
 			list<string> l_usuarios;
 			l_usuarios = Abrir();
-			cout <<"Despues de abrir\n";
-			serepite = BuscarRepetido(l_usuarios, nuevo);
-			cout <<"Despues de Buscar Repetido\n";
+			serepite = AgregarDato(l_usuarios, nuevo);
 			if (serepite != true)
 			{
-				cout <<"Entral al if del repite\n";
 				l_us.push_back(us);
 				//Almacenamos la informacion del usuario en Archivo
 				cout <<"Guardando...\n";
 				if (primero)
 				{
 					Guardar(us, 0);
+					cout <<"\nArchivo guardado de primeraso...\n";
 					primero = false;
 				}
 				else
 				{
+					cout <<"\nArchivo guardado de segundo...\n";
 					Guardar(us, 1);
 				}
 			}			
@@ -209,27 +210,29 @@ void Servicio3(int ns)
 	Enviar(ns, "30","Servicio3 Recibido...");
 }
 
-
-bool BuscarRepetido(list<string> l, int idint)
+bool AgregarDato(list<string> lista, int codigo)
 {
 	list <string>:: iterator i;
 	bool repetido = false;
-	for (i = l.begin(); i!= l.end(); i++)
+	for (i = lista.begin(); i!= lista.end(); i++)
 	{
-		string cadena;
-		cadena = *i;
-		if (cadena != "0")
+		string cad;
+		cad = *i;
+		if (cad == "0")
 		{
-			users infousr = stringtoUsers(cadena);
-			cout <<cadena;
-			if (idint == infousr.idint)
+			users infousr = stringtoUsers(cad);
+			cout <<"Contenido: "<<cad <<endl;
+			if (codigo == infousr.idint)
 			{
+				cout <<"Este codigo ya existe: "<< codigo <<endl;
 				repetido = true;
 			}
+			cout <<"El codigo: " <<codigo <<" es nuevo\n";
 		}
 	}
 	return repetido;
 }
+
 
 void Buscar(list<string> l, int idser, string nombre)
 {
@@ -245,9 +248,9 @@ void Buscar(list<string> l, int idser, string nombre)
 		{
 			repetido = true;
 		}
-		cout <<"Valores...\n";
-		cout <<"Usuario: "<<infousr.user <<endl;
-		cout <<"ID interno: " <<infousr.idint <<endl;
+		//cout <<"Valores...\n";
+		//cout <<"Usuario: "<<infousr.user <<endl;
+		//cout <<"ID interno: " <<infousr.idint <<endl;
 	}
 	list<users> nuevalista;
 	if(!repetido)
@@ -265,21 +268,24 @@ void Buscar(list<string> l, int idser, string nombre)
 			nuevalista.push_back(infousr);
 		}
 		//reescribir archivo lista.usr.srv
-		list<users>::iterator i_users;
 		bool primero = true;
+		list<users>::iterator i_users;
 		for (i_users = nuevalista.begin(); i_users!= nuevalista.end(); i_users++)
 		{
 			users aux;
 			aux = *i_users;
 			if (primero)
 			{
+				cout <<"\nFuncion guardar en Buscar: NUEVO\n";
 				Guardar(aux,0);
 				primero = false;
 			}
 			else
 			{
+				cout <<"\nFuncion guardar en Buscar: AGREGAR AL ARCHIVO APPEND\n";
 				Guardar(aux,1);
 			}
+			
 		}
 	}
 }
@@ -289,19 +295,19 @@ void Buscar(list<string> l, int idser, string nombre)
 void mostrar(list<users> usr)
 {
 	int registro = 1;
-	cout <<"Cantidad de Usuarios: " <<usr.size() <<endl;
+	//cout <<"Cantidad de Usuarios: " <<usr.size() <<endl;
 	list <users>:: iterator i = usr.begin();
 	while (i!= usr.end())
 	{
 		users us;
 		//usuarios us este es el global
 		us =*i;
-		cout <<"\nRegistro: " << registro <<endl;;
+		//cout <<"\nRegistro: " << registro <<endl;;
 		cout <<"Usuario: "<< us.user<< endl;
 		cout <<"ID interno: "<< us.idint <<endl;
 		cout <<"Direccion IP: "<< us.ip <<endl;
 		i++;
-		registro++;
+		//registro++;
 	}	
 }
 
@@ -309,6 +315,8 @@ void mostrar(list<users> usr)
 list<string> Abrir()
 {
 	FILE *archivo;
+	bool repetido;
+	user inforusr
 	char caracteres[MAXLONG];
 	list<string> l_usuarios;
 
@@ -323,7 +331,24 @@ list<string> Abrir()
 	{
 		fgets(caracteres, MAXLONG, archivo);
 		string info = (string)caracteres;
-		cout <<info <<endl;
+		cout <<"\nArchivo inside: " <<info <<endl;
+
+
+
+
+
+
+		users infousr = stringtoUsers(cadena);
+		if (idser == infousr.idint)
+		{
+			repetido = true;
+		}
+		
+
+
+
+
+
 		l_usuarios.push_back(info);
 	}
 	fclose(archivo);
@@ -336,10 +361,12 @@ void Guardar(users u, int tipo)
 	FILE *fp;
 	if (tipo == 1)
 	{
+		cout <<"\nSe agrego al archivo...\n";
 		fp = fopen(LISTADO, "a");
 	}
 	else
 	{
+		cout <<"\nSe sobrescribe el archivo\n";
 		fp = fopen(LISTADO, "w");	
 	}
 	
@@ -348,7 +375,7 @@ void Guardar(users u, int tipo)
 	strcpy(registro, sreg.c_str());
 	fputs(registro, fp);
 	fclose(fp);
-	cout <<"Guardado con Exito...\n";
+	cout <<"\nGuardado en el archivo...\n";
 }
 
 int stringtoint(string x)
