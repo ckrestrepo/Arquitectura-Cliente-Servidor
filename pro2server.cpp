@@ -12,6 +12,7 @@
 #include "arpa/inet.h"
 #include "sstream"
 #include "wait.h"
+#include "fstream"
 #include "list"
 
 using namespace std;
@@ -49,6 +50,8 @@ void Enviarinicial (int, struct sockaddr_in);
 void Enviar (int, string, string);
 int nueva_cx (int);
 void mostrar(list<users>);
+
+bool BuscarRepetido(list<string>, int);
 void Buscar(list<string>, int, string);
 list<string> Abrir();
 void Servicio1(int);
@@ -70,6 +73,10 @@ int main()
 {
 	inicializar();
     cout <<"\n...Servidor Iniciado...\n";
+    ofstream limpiar;
+    limpiar.open(LISTADO, ios::trunc);
+    limpiar <<"";
+    limpiar.close();
 	int fin = 1;
 	bool primero = true;
 	do
@@ -116,6 +123,7 @@ int main()
 		//Padre
 		if(idProceso > 0)
 		{
+			bool serepite;
 			Enviarinicial(nuevo, cliente);
 			users us;
 			us.user = "vacio";
@@ -123,18 +131,28 @@ int main()
 			dire = inet_ntoa(cliente.sin_addr);
 			us.ip = (string)dire;
 			us.idint = nuevo;
-			l_us.push_back(us);
-			//Almacenamos la informacion del usuario en Archivo
-			cout <<"Guardando...\n";
-			if (primero)
+
+			list<string> l_usuarios;
+			l_usuarios = Abrir();
+			cout <<"Despues de abrir\n";
+			serepite = BuscarRepetido(l_usuarios, nuevo);
+			cout <<"Despues de Buscar Repetido\n";
+			if (serepite != true)
 			{
-				Guardar(us, 0);
-				primero = false;
-			}
-			else
-			{
-				Guardar(us, 1);
-			}
+				cout <<"Entral al if del repite\n";
+				l_us.push_back(us);
+				//Almacenamos la informacion del usuario en Archivo
+				cout <<"Guardando...\n";
+				if (primero)
+				{
+					Guardar(us, 0);
+					primero = false;
+				}
+				else
+				{
+					Guardar(us, 1);
+				}
+			}			
 			mostrar(l_us);
 		}
 	}while (fin == 1);
@@ -189,6 +207,28 @@ void Servicio3(int ns)
 {
 	string info;
 	Enviar(ns, "30","Servicio3 Recibido...");
+}
+
+
+bool BuscarRepetido(list<string> l, int idint)
+{
+	list <string>:: iterator i;
+	bool repetido = false;
+	for (i = l.begin(); i!= l.end(); i++)
+	{
+		string cadena;
+		cadena = *i;
+		if (cadena != "0")
+		{
+			users infousr = stringtoUsers(cadena);
+			cout <<cadena;
+			if (idint == infousr.idint)
+			{
+				repetido = true;
+			}
+		}
+	}
+	return repetido;
 }
 
 void Buscar(list<string> l, int idser, string nombre)
@@ -287,7 +327,6 @@ list<string> Abrir()
 		l_usuarios.push_back(info);
 	}
 	fclose(archivo);
-	cout <<endl;
 	return l_usuarios;
 }
 
