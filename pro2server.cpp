@@ -51,10 +51,8 @@ void Enviar (int, string, string);
 int nueva_cx (int);
 void mostrar(list<users>);
 
+bool BuscarRepetido(list<string>, int);
 void Buscar(list<string>, int, string);
-bool AgregarDato(list<string>, int);
-
-
 list<string> Abrir();
 void Servicio1(int);
 void Servicio2(int);
@@ -136,21 +134,20 @@ int main()
 
 			list<string> l_usuarios;
 			l_usuarios = Abrir();
-			serepite = AgregarDato(l_usuarios, nuevo);
+			serepite = BuscarRepetido(l_usuarios, nuevo);
 			if (serepite != true)
 			{
 				l_us.push_back(us);
 				//Almacenamos la informacion del usuario en Archivo
-				cout <<"Guardando...\n";
 				if (primero)
 				{
+					cout <<"\nPrimer registro\n";
 					Guardar(us, 0);
-					cout <<"\nArchivo guardado de primeraso...\n";
 					primero = false;
 				}
 				else
 				{
-					cout <<"\nArchivo guardado de segundo...\n";
+					cout <<"\nSegundo vez que entra\n";
 					Guardar(us, 1);
 				}
 			}			
@@ -189,19 +186,26 @@ void Servicio2(int ns)
 {
 	// Registro de usuarios
 	ds iserv;
+	bool serepite;
 	iserv = Recibir(ns);
 	Enviar(nuevo, "1", "Opcion recibida");
-	cout <<"ID: "<<iserv.idservicio <<endl; 
-	cout <<"Info: " <<iserv.info <<endl;
+	cout <<"Codigo id: "<<iserv.idservicio <<endl; 
+	cout <<"Nombre: " <<iserv.info <<endl;
 	string nombre = iserv.info;
 	// 1. Extraer informacion del archivo a una lista
 	list<string> l_usuarios;
 	l_usuarios = Abrir();
+	
+	serepite = BuscarRepetido(l_usuarios, ns);
+	if (serepite != true)
+	{
+		Buscar(l_usuarios, ns, nombre);
+	}
 	// 2. Buscar coincidencia de id socket en la lista
 	// 3. Verificar nombre (que no se repita)
 	// 4. Si no se repite, cambiar valor en la lista
 	// 5. Reemplazar datos del archivo por informacion en la lista
-	Buscar(l_usuarios, ns, nombre);
+	
 }
 
 void Servicio3(int ns)
@@ -210,29 +214,27 @@ void Servicio3(int ns)
 	Enviar(ns, "30","Servicio3 Recibido...");
 }
 
-bool AgregarDato(list<string> lista, int codigo)
+
+bool BuscarRepetido(list<string> l, int idint)
 {
 	list <string>:: iterator i;
 	bool repetido = false;
-	for (i = lista.begin(); i!= lista.end(); i++)
+	for (i = l.begin(); i!= l.end(); i++)
 	{
-		string cad;
-		cad = *i;
-		if (cad == "0")
+		string cadena;
+		cadena = *i;
+		if (cadena != "0")
 		{
-			users infousr = stringtoUsers(cad);
-			cout <<"Contenido: "<<cad <<endl;
-			if (codigo == infousr.idint)
+			users infousr = stringtoUsers(cadena);
+			cout <<cadena;
+			if (idint == infousr.idint)
 			{
-				cout <<"Este codigo ya existe: "<< codigo <<endl;
 				repetido = true;
 			}
-			cout <<"El codigo: " <<codigo <<" es nuevo\n";
 		}
 	}
 	return repetido;
 }
-
 
 void Buscar(list<string> l, int idser, string nombre)
 {
@@ -248,9 +250,9 @@ void Buscar(list<string> l, int idser, string nombre)
 		{
 			repetido = true;
 		}
-		//cout <<"Valores...\n";
-		//cout <<"Usuario: "<<infousr.user <<endl;
-		//cout <<"ID interno: " <<infousr.idint <<endl;
+		cout <<"Valores...\n";
+		cout <<"Usuario: "<<infousr.user <<endl;
+		cout <<"ID interno: " <<infousr.idint <<endl;
 	}
 	list<users> nuevalista;
 	if(!repetido)
@@ -268,24 +270,21 @@ void Buscar(list<string> l, int idser, string nombre)
 			nuevalista.push_back(infousr);
 		}
 		//reescribir archivo lista.usr.srv
-		bool primero = true;
 		list<users>::iterator i_users;
+		bool primero = true;
 		for (i_users = nuevalista.begin(); i_users!= nuevalista.end(); i_users++)
 		{
 			users aux;
 			aux = *i_users;
 			if (primero)
 			{
-				cout <<"\nFuncion guardar en Buscar: NUEVO\n";
 				Guardar(aux,0);
 				primero = false;
 			}
 			else
 			{
-				cout <<"\nFuncion guardar en Buscar: AGREGAR AL ARCHIVO APPEND\n";
 				Guardar(aux,1);
 			}
-			
 		}
 	}
 }
@@ -294,7 +293,7 @@ void Buscar(list<string> l, int idser, string nombre)
 
 void mostrar(list<users> usr)
 {
-	int registro = 1;
+	//int registro = 1;
 	//cout <<"Cantidad de Usuarios: " <<usr.size() <<endl;
 	list <users>:: iterator i = usr.begin();
 	while (i!= usr.end())
@@ -315,8 +314,6 @@ void mostrar(list<users> usr)
 list<string> Abrir()
 {
 	FILE *archivo;
-	bool repetido;
-	user inforusr
 	char caracteres[MAXLONG];
 	list<string> l_usuarios;
 
@@ -331,24 +328,7 @@ list<string> Abrir()
 	{
 		fgets(caracteres, MAXLONG, archivo);
 		string info = (string)caracteres;
-		cout <<"\nArchivo inside: " <<info <<endl;
-
-
-
-
-
-
-		users infousr = stringtoUsers(cadena);
-		if (idser == infousr.idint)
-		{
-			repetido = true;
-		}
-		
-
-
-
-
-
+		cout <<"Contenido del archivo: "<<info <<endl;
 		l_usuarios.push_back(info);
 	}
 	fclose(archivo);
@@ -361,12 +341,10 @@ void Guardar(users u, int tipo)
 	FILE *fp;
 	if (tipo == 1)
 	{
-		cout <<"\nSe agrego al archivo...\n";
 		fp = fopen(LISTADO, "a");
 	}
 	else
 	{
-		cout <<"\nSe sobrescribe el archivo\n";
 		fp = fopen(LISTADO, "w");	
 	}
 	
@@ -375,7 +353,7 @@ void Guardar(users u, int tipo)
 	strcpy(registro, sreg.c_str());
 	fputs(registro, fp);
 	fclose(fp);
-	cout <<"\nGuardado en el archivo...\n";
+	cout <<"Guardado con Exito...\n";
 }
 
 int stringtoint(string x)
