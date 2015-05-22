@@ -1,0 +1,146 @@
+/*
+servidor.cpp
+*/
+#include <stdio.h>
+#include <iostream>
+#include <stdlib.h>
+#include <string.h>
+#include <malloc.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+using namespace std;
+
+#define MIPUERTO 9090  //pto de conexion para usuarios
+#define MIIP "127.0.0.1"
+#define ENCOLA 10 //no conexiones permitidas
+#define MAXLONGITUD 128
+
+int nosocket, nuevo_socket;
+struct sockaddr_in dirservidor;
+struct sockaddr_in cliente; 
+socklen_t senal_tam; 
+
+void iniciar();
+int nueva_cx(int);
+void verIp(struct sockaddr_in, int);
+string recibir(int);
+void enviar(int);
+void enviar(int, string);
+
+int main(int argc, char *argv[])
+{
+   iniciar();
+
+   while(1) 
+   {
+      nuevo_socket=nueva_cx(nosocket);
+      verIp(cliente, nuevo_socket);
+      //Procesamiento dela mensaje recibido 
+      string msjrec="";
+      do{     
+      cout<<"En espera de mensaje... "<<endl;
+      msjrec=recibir(nuevo_socket)
+      cout<<"Mensaje del cliente: "<< msjrec <<endl;
+      }while(msjrec != "fin");
+      
+      close(nuevo_socket); 
+   }//fin while
+   return 0;
+}
+
+void iniciar(){
+  nosocket=socket(AF_INET,SOCK_STREAM,0);
+  if(nosocket==-1)
+  {
+    cout<<"Error en socket."<<endl;
+    exit(-1);
+  }
+  
+  dirservidor.sin_family=AF_INET;
+  dirservidor.sin_port=htons(MIPUERTO);
+  dirservidor.sin_addr.s_addr = inet_addr(MIIP);
+  bzero(&(dirservidor.sin_zero),8);
+  
+  if(bind(nosocket,(struct sockaddr*)&dirservidor,sizeof(struct sockaddr))==-1) {
+      cout<< "error en bind() " << endl;
+      exit(-1);
+   }  
+
+   if(listen(nosocket,ENCOLA) == -1) 
+   {  
+      cout<<"error en listen() "<<endl;
+      exit(-1);
+   }
+
+   //cout<<"nosocket: "<<nosocket<<endl;
+}
+
+int nueva_cx(int s){
+  senal_tam=sizeof(struct sockaddr_in);
+  int ns = accept(s,(struct sockaddr *)&cliente,&senal_tam);
+      if (nuevo_socket==-1) 
+      {
+         cout<<"error en accept() " << endl;
+         exit(-1);
+      }
+  return ns;    
+}
+
+void verIp(struct sockaddr_in c, int s){
+  char *dire;
+  dire=inet_ntoa(c.sin_addr);
+  cout<<"Direccion del cliente: "<<dire<<endl;
+  enviar(s, "Bienvenido al servidor.\n" );
+}
+
+string recibir(int s){
+  char msj[MAXLONGITUD];
+  string smsj="";
+  int numbytes=recv(s,msj,MAXLONGITUD,0);
+      if (numbytes==-1)
+      {
+       cout<<"Error al recibir. "<< endl;
+      }
+      if(numbytes==0)
+      {
+       cout<<"Conexion finalizada"<<endl;
+      }
+      if(numbytes>0)
+      {
+        msj[numbytes]='\0';
+        //cout<<"Mensaje del cliente: "<<msj<<endl;
+        smsj=(string)msj;
+      }
+     return smsj;
+}
+
+void enviar(int s){
+   send(s, "recibido...\n", 12 ,0); 
+}
+
+void enviar(int s, string cad){
+  char msj[MAXLONGITUD];
+  strcpy(msj, cad.c_str());
+  send(s, msj, cad.size(),0); 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
