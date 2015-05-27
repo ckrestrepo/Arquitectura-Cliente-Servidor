@@ -45,25 +45,46 @@ void *hcliente (void*);
 
 int main(int argc, char *argv[])
 {
+  pthread_t hilos1;
+  pthread_t hilos2;
   pthread_t hilos[5];
   int iret, iret2;
   iniciar();
   cout <<"\n...Bienvenido al servidor...\n";
+  int clientes = 1;
   while(1) 
   {
-    nuevo_socket=nueva_cx(nosocket);
-    verIp(cliente, nuevo_socket);
-    //Procesamiento del mensaje recibido 
+  	  nuevo_socket=nueva_cx(nosocket);
+      verIp(cliente, nuevo_socket);
+      //Procesamiento dela mensaje recibido 
+      if(pthread_create(&hilos1, NULL, hcliente, &nuevo_socket)){
+      cout<<"iniciando hilo..."<<endl;
+      pthread_join(hilos1,NULL);		
+      close(nuevo_socket); 
+      }/*
+      if(pthread_create(&hilos2, NULL, hcliente, &nuevo_socket)){
+      cout<<"iniciando hilo..."<<endl;
+      pthread_join(hilos2,NULL);		
+      close(nuevo_socket); 
+      }*/
+
+      /*
     for (int i = 0; i < 5; ++i)
     {
+    		cout <<"Inicio del for\n";
         if (pthread_create (&hilos[i] , NULL , hcliente , &nuevo_socket))
         {
           cout <<"\nIniciando el hilo ["<<(i+1)<<"]...\n";
           pthread_join(hilos[i], NULL);
           close(nuevo_socket); 
         }    
-    }
+        cout <<"\n fin del if\n";
+    }// fin del for
+    cout <<"\n fin del for\n";
+
+    */
   }//fin while
+  cout <<"\nFin del While...\n";
    return 0;
 }
 
@@ -78,7 +99,7 @@ void *hcliente (void* ptro)
     do
     {     
       valoropc = recibir(nuevo_socket);
-      cout<<"Opcion del cliente: "<< valoropc <<endl;
+      cout<<"Opcion del cliente["<<sock<<"]: "<< valoropc <<endl;
       opcion = stringtoint(valoropc);
       enviar(nuevo_socket, "Opcion recibida");
       switch(opcion)

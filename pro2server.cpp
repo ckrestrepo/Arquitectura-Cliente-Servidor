@@ -75,7 +75,7 @@ int main()
     cout <<"\n...Servidor Iniciado...\n";
     ofstream limpiar;
     limpiar.open(LISTADO, ios::trunc);
-    limpiar <<"";
+    limpiar <<"0";
     limpiar.close();
 	int fin = 1;
 	bool primero = true;
@@ -194,18 +194,8 @@ void Servicio2(int ns)
 	string nombre = iserv.info;
 	// 1. Extraer informacion del archivo a una lista
 	list<string> l_usuarios;
-	l_usuarios = Abrir();
-	
-	serepite = BuscarRepetido(l_usuarios, ns);
-	if (serepite != true)
-	{
-		Buscar(l_usuarios, ns, nombre);
-	}
-	// 2. Buscar coincidencia de id socket en la lista
-	// 3. Verificar nombre (que no se repita)
-	// 4. Si no se repite, cambiar valor en la lista
-	// 5. Reemplazar datos del archivo por informacion en la lista
-	
+	l_usuarios = Abrir();	
+	Buscar(l_usuarios, ns, nombre);
 }
 
 void Servicio3(int ns)
@@ -254,6 +244,7 @@ void Buscar(list<string> l, int idser, string nombre)
 		cout <<"Usuario: "<<infousr.user <<endl;
 		cout <<"ID interno: " <<infousr.idint <<endl;
 	}
+	
 	list<users> nuevalista;
 	if(!repetido)
 	{
@@ -279,10 +270,12 @@ void Buscar(list<string> l, int idser, string nombre)
 			if (primero)
 			{
 				Guardar(aux,0);
+				cout <<"Guardar en opcion 0\n";
 				primero = false;
 			}
 			else
 			{
+				cout <<"Guardar en opcion 1...\n";
 				Guardar(aux,1);
 			}
 		}

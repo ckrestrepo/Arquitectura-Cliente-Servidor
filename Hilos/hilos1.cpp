@@ -51,5 +51,3 @@ void *funcion2(void * arg)
 	}
 	return NULL;
 }
-
-Hi

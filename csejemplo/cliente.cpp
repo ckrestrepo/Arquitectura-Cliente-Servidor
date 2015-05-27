@@ -52,6 +52,7 @@ int main()
     switch(opcion)
     {
       case 1: 
+      {
         cout <<"Digite el primer numero: ";
         cin >> a;
         enviar(nosocket, inttostring(a));   // Enviar primer digito (2)
@@ -63,7 +64,9 @@ int main()
         enviar(nosocket, "\nGracias\n");
         cout <<recibir(nosocket) <<endl;    // Recibido del resultado (4)
         break;
+    	}
       case 2:
+      {
         cout <<"Digite la palabra: ";
         cin >> palabra;
         enviar(nosocket, palabra);
@@ -71,11 +74,14 @@ int main()
         enviar(nosocket, "\nGracias\n");
         cout <<recibir(nosocket) <<endl;    
         break;
+      }
 
       case 0:
+      {
         enviar(nosocket, "\nHe salido del servidor...\n");
         cout << recibir(nosocket) <<endl;
         break;
+      }
       default:
         cout <<"Opcion incorrecta... Imbecil\n";
         break;
