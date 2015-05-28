@@ -68,6 +68,7 @@ struct sockaddr_in cliente;
 //Variables "globales"
 int nosocket, nuevo;
 socklen_t lon;
+bool primero = true;
 
 int main()
 {
@@ -78,7 +79,6 @@ int main()
     limpiar <<"0";
     limpiar.close();
 	int fin = 1;
-	bool primero = true;
 	do
 	{
 		nuevo = nueva_cx(nosocket);
@@ -104,17 +104,14 @@ int main()
 				cout <<"Info: " <<iserv.info <<endl;
 				if(iserv.idservicio == "31")
 				{
-					// Lista de usuarios
 					Servicio1(nuevo);
 				}
 				if(iserv.idservicio == "32")
 				{
-					// Registrar usuario
 					Servicio2(nuevo);
 				}
 				if(iserv.idservicio == "33")
 				{
-					// Jugar
 					Servicio3(nuevo);
 				}
 			}while (iserv.idservicio != "2");
@@ -219,6 +216,8 @@ bool BuscarRepetido(list<string> l, int idint)
 			cout <<cadena;
 			if (idint == infousr.idint)
 			{
+				cout <<"El IDint: " << idint <<endl;
+				cout <<"El infousr.idint: " << infousr.idint <<endl;
 				repetido = true;
 			}
 		}
@@ -262,15 +261,15 @@ void Buscar(list<string> l, int idser, string nombre)
 		}
 		//reescribir archivo lista.usr.srv
 		list<users>::iterator i_users;
-		bool primero = true;
+		//bool primero = true;
 		for (i_users = nuevalista.begin(); i_users!= nuevalista.end(); i_users++)
 		{
 			users aux;
 			aux = *i_users;
 			if (primero)
 			{
-				Guardar(aux,0);
 				cout <<"Guardar en opcion 0\n";
+				Guardar(aux,0);
 				primero = false;
 			}
 			else
@@ -286,20 +285,20 @@ void Buscar(list<string> l, int idser, string nombre)
 
 void mostrar(list<users> usr)
 {
-	//int registro = 1;
-	//cout <<"Cantidad de Usuarios: " <<usr.size() <<endl;
+	int registro = 1;
+	cout <<"Cantidad de Usuarios: " <<usr.size() <<endl;
 	list <users>:: iterator i = usr.begin();
 	while (i!= usr.end())
 	{
 		users us;
 		//usuarios us este es el global
 		us =*i;
-		//cout <<"\nRegistro: " << registro <<endl;;
+		cout <<"\nRegistro: " << registro <<endl;;
 		cout <<"Usuario: "<< us.user<< endl;
 		cout <<"ID interno: "<< us.idint <<endl;
 		cout <<"Direccion IP: "<< us.ip <<endl;
 		i++;
-		//registro++;
+		registro++;
 	}	
 }
 
